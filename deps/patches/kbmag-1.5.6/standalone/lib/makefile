@@ -35,4 +35,4 @@ kbfns.o: kbfns.c
 .c.o:
 	$(CC) -c $(DCOPTS) $(COPTS) $*.c
 clean:
-	$(RM) -f $(OBJS) $(LIBOBJ) $(STATIC) $(SHARED)
+	$(RM) -f $(OBJS) $(LIBOBJ) $(STATIC) $(SHARED) $(LIBWRAPPER)
