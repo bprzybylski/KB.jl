@@ -8,3 +8,5 @@ function check_deps(lib)
         error("$(lib) cannot be opened, Please re-run using Pkg; Pkg.build(\"KB\"), and restart Julia.")
     end
 end
+
+check_deps(fsalib)
