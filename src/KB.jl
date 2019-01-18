@@ -1,0 +1,3 @@
+module KB
+
+end # module
