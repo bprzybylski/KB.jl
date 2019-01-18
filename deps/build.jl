@@ -6,9 +6,11 @@ src_uri = "https://github.com/gap-packages/kbmag/releases/download/v$version/kbm
 
 download_dir = joinpath(@__DIR__, "downloads")
 src_dir = joinpath(@__DIR__, "src")
+patches_dir = joinpath(@__DIR__, "patches")
 dst_dir = joinpath(@__DIR__, "usr", "lib")
 mkpath(download_dir)
 mkpath(src_dir)
+mkpath(patches_dir)
 mkpath(dst_dir)
 
 standalone_lib_dir = joinpath(src_dir, "kbmag-$version", "standalone", "lib")
@@ -30,19 +32,24 @@ end
 function build(build_dir, make_target; j=4)
     current_dir = pwd()
     cd(build_dir)
-    
-    download("https://raw.githubusercontent.com/gap-packages/kbmag/12a09ba0b9aefa9e4817c9531ac22b9f0b9f3996/standalone/lib/makefile",
-    joinpath(build_dir, "makefile"))
+
     run(`make -j$j $make_target`)
-    
+
     cd(current_dir)
+end
+
+function patch(sources, patches)
+    # Awwww :/
+    run(`bash -c "cp -Rf $patches/* $sources"`)
 end
 
 if !isfile(target)
     sources = joinpath(download_dir, "kbmag-$version.tar.gz")
     getsources(src_uri, sources)
     unpack(sources, src_dir)
-    
+
+    patch(src_dir, patches_dir)
+
     build(standalone_lib_dir, "fsalib.$(Libdl.dlext)")
     mv(joinpath(standalone_lib_dir, "fsalib.$(Libdl.dlext)"), target)
 end
