@@ -1,38 +1,48 @@
-using BinDeps
 using Libdl
-
-@BinDeps.setup
-
-fsalib = library_dependency("fsalib")
 
 version = "1.5.6"
 
-provides(Sources, URI("https://github.com/gap-packages/kbmag/releases/download/v$version/kbmag-$version.tar.gz"), fsalib, unpacked_dir="kbmag-$version")
+src_uri = "https://github.com/gap-packages/kbmag/releases/download/v$version/kbmag-$version.tar.gz"
 
-src_dir = joinpath(BinDeps.depsdir(fsalib), "src")
+download_dir = joinpath(@__DIR__, "downloads")
+src_dir = joinpath(@__DIR__, "src")
+dst_dir = joinpath(@__DIR__, "usr", "lib")
+mkpath(download_dir)
+mkpath(src_dir)
+mkpath(dst_dir)
+
 standalone_lib_dir = joinpath(src_dir, "kbmag-$version", "standalone", "lib")
-dst_dir = joinpath(BinDeps.depsdir(fsalib), "usr", "lib")
-target_lib = joinpath(dst_dir, "fsalib.$(Libdl.dlext)")
+target = joinpath(dst_dir, "fsalib.$(Libdl.dlext)")
 
-if Sys.isapple()
-    nothing
+function getsources(src_uri, destination, force=false)
+    if force || !isfile(destination)
+        download(src_uri, destination)
+    end
 end
 
-fsalib_build =     @build_steps begin
-        GetSources(fsalib)
-        CreateDirectory(dst_dir)
-        FileDownloader(
-            "https://raw.githubusercontent.com/gap-packages/kbmag/12a09ba0b9aefa9e4817c9531ac22b9f0b9f3996/standalone/lib/makefile",
-            joinpath(standalone_lib_dir, "makefile.new"))
-
-        FileRule(target_lib, @build_steps begin
-            ChangeDirectory(standalone_lib_dir)
-            `mv makefile.new makefile`
-            MakeTargets("fsalib.so")
-            `mv fsalib.$(Libdl.dlext) $dst_dir`
-        end)
+function unpack(source_tarball, destination_dir, force=false)
+    unpack_dir = joinpath(destination_dir, split(basename(source_tarball),".")[1])
+    if force || !isdir(unpack_dir)
+        run(`tar -xvzf $source_tarball -C $destination_dir`)
     end
+end
 
-provides(SimpleBuild, fsalib_build, fsalib)
+function build(build_dir, make_target; j=4)
+    current_dir = pwd()
+    cd(build_dir)
+    
+    download("https://raw.githubusercontent.com/gap-packages/kbmag/12a09ba0b9aefa9e4817c9531ac22b9f0b9f3996/standalone/lib/makefile",
+    joinpath(build_dir, "makefile"))
+    run(`make -j$j $make_target`)
+    
+    cd(current_dir)
+end
 
-@BinDeps.install Dict(:fsalib => :fsalib)
+if !isfile(target)
+    sources = joinpath(download_dir, "kbmag-$version.tar.gz")
+    getsources(src_uri, sources)
+    unpack(sources, src_dir)
+    
+    build(standalone_lib_dir, "fsalib.$(Libdl.dlext)")
+    mv(joinpath(standalone_lib_dir, "fsalib.$(Libdl.dlext)"), target)
+end
