@@ -1,21 +1,12 @@
 using Libdl
 
-version = "1.5.6"
+# constant directories
+const download_dir = joinpath(@__DIR__, "downloads");   mkpath(download_dir)
+const src_dir = joinpath(@__DIR__, "src");              mkpath(src_dir)
+const patches_dir = joinpath(@__DIR__, "patches");      mkpath(patches_dir)
+const dst_dir = joinpath(@__DIR__, "usr", "lib");       mkpath(dst_dir)
 
-src_uri = "https://github.com/gap-packages/kbmag/releases/download/v$version/kbmag-$version.tar.gz"
-
-download_dir = joinpath(@__DIR__, "downloads")
-src_dir = joinpath(@__DIR__, "src")
-patches_dir = joinpath(@__DIR__, "patches")
-dst_dir = joinpath(@__DIR__, "usr", "lib")
-mkpath(download_dir)
-mkpath(src_dir)
-mkpath(patches_dir)
-mkpath(dst_dir)
-
-standalone_lib_dir = joinpath(src_dir, "kbmag-$version", "standalone", "lib")
-target = joinpath(dst_dir, "fsalib.$(Libdl.dlext)")
-
+# common functions
 function getsources(src_uri, destination, force=false)
     if force || !isfile(destination)
         download(src_uri, destination)
@@ -32,24 +23,32 @@ end
 function build(build_dir, make_target; j=4)
     current_dir = pwd()
     cd(build_dir)
-
     run(`make -j$j $make_target`)
-
     cd(current_dir)
 end
 
-function patch(sources, patches)
-    # Awwww :/
-    run(`bash -c "cp -Rf $patches/* $sources"`)
+function patch(package)
+    patch_dir = joinpath(patches_dir, package)
+    if isdir(patch_dir)
+        run(`cp -Rf $patch_dir $src_dir`)
+    end
 end
 
-if !isfile(target)
-    sources = joinpath(download_dir, "kbmag-$version.tar.gz")
-    getsources(src_uri, sources)
-    unpack(sources, src_dir)
+# kbmag dependency
+function kbmag(version)
+    src_uri = "https://github.com/gap-packages/kbmag/releases/download/v$version/kbmag-$version.tar.gz"
+    standalone_lib_dir = joinpath(src_dir, "kbmag-$version", "standalone", "lib")
+    target = joinpath(dst_dir, "fsalib.$(Libdl.dlext)")
 
-    patch(src_dir, patches_dir)
-
-    build(standalone_lib_dir, "fsalib.$(Libdl.dlext)")
-    mv(joinpath(standalone_lib_dir, "fsalib.$(Libdl.dlext)"), target)
+    if !isfile(target)
+        sources = joinpath(download_dir, "kbmag-$version.tar.gz")
+        getsources(src_uri, sources)
+        unpack(sources, src_dir)
+        patch("kbmag-$version")
+        build(standalone_lib_dir, "fsalib.$(Libdl.dlext)")
+        mv(joinpath(standalone_lib_dir, "fsalib.$(Libdl.dlext)"), target)
+    end
 end
+
+# download and build dependencies
+kbmag("1.5.6")
