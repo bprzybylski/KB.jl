@@ -20,9 +20,10 @@ function unpack(source_tarball, destination_dir, force=false)
     end
 end
 
-function build(build_dir, make_target; j=4)
+function build(build_dir, make_target, force=false; j=4)
     current_dir = pwd()
     cd(build_dir)
+    force && run(`make clean`)
     run(`make -j$j $make_target`)
     cd(current_dir)
 end
@@ -35,20 +36,20 @@ function patch(package)
 end
 
 # kbmag dependency
-function kbmag(version)
+function installkbmag(version::VersionNumber, force=false)
     src_uri = "https://github.com/gap-packages/kbmag/releases/download/v$version/kbmag-$version.tar.gz"
     standalone_lib_dir = joinpath(src_dir, "kbmag-$version", "standalone", "lib")
     target = joinpath(dst_dir, "fsalib.$(Libdl.dlext)")
 
-    if !isfile(target)
+    if force || !isfile(target)
         sources = joinpath(download_dir, "kbmag-$version.tar.gz")
-        getsources(src_uri, sources)
-        unpack(sources, src_dir)
+        getsources(src_uri, sources, force)
+        unpack(sources, src_dir, force)
         patch("kbmag-$version")
-        build(standalone_lib_dir, "fsalib.$(Libdl.dlext)")
-        mv(joinpath(standalone_lib_dir, "fsalib.$(Libdl.dlext)"), target)
+        build(standalone_lib_dir, "fsalib.$(Libdl.dlext)", force)
+        mv(joinpath(standalone_lib_dir, "fsalib.$(Libdl.dlext)"), target, force=true)
     end
 end
 
 # download and build dependencies
-kbmag("1.5.6")
+installkbmag(v"1.5.6")
