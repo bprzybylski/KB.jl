@@ -45,3 +45,34 @@ end
     TRIM
     RWS
 end
+
+#=
+    Type name: Char
+    Date: 2019-03-14
+=#
+const Char=UInt8
+
+#=
+    Type name: Gen (Char)
+    Original type name: gen (char)
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h [46]
+    Date: 2019-03-14
+=#
+const Gen=Char
+
+#=
+    Type name: SetToLabelsType
+    Original type name: setToLabelsType
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [55]
+    Date: 2019-03-14
+=#
+const SetToLabelsType=Int8
+
+#=
+    Const name: MaxChar / MaxGen
+    Original const name: MAXCHAR / MAXGEN
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h [20 / 45]
+    Date: 2019-03-14
+=#
+MaxChar = MaxGen = 127
+
