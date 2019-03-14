@@ -1,4 +1,4 @@
-export Fsa
+export SrecType, StorageType, KBMFlagStrings, Char, Gen, SetToLabelsType, Srec
 
 #=
     Enum name: SrecType
