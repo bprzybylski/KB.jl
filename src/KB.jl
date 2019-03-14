@@ -8,4 +8,6 @@ else
     error("KB not properly installed. Please (re) build KB and restart julia")
 end
 
+include("types.jl")
+
 end # module
