@@ -28,3 +28,20 @@ end
     SPARSE
     COMPACT
 end
+
+#=
+    Enum name: KBMFlagStrings
+    Original enum name: kbm_flag_strings
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/ [41--50]
+    Date: 2019-03-12
+=#
+@enum KBMFlagStrings begin
+    DFA
+    NFA
+    MIDFA
+    MINIMIZED
+    BFS
+    ACCESSIBLE
+    TRIM
+    RWS
+end
