@@ -76,3 +76,24 @@ const SetToLabelsType=Int8
 =#
 MaxChar = MaxGen = 127
 
+#=
+    Struct name: Srec
+    Original struct name: srec
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [57--86]
+    Date: 2019-03-14
+=#
+struct Srec
+    type::SrecType
+    size::Int
+    names::Ptr{Ptr{Char}}
+    words::Ptr{Ptr{Gen}}
+    wordslist::Ptr{Ptr{Ptr{Gen}}}
+    intlist::Ptr{Ptr{Int}}
+    arity::Int
+    padding::Char
+    alphabet::Ptr{Ptr{Char}} # Originally char *alphabet[MAXGEN + 1] (what to do about that?)
+    alphabet_size::Int
+    base::Ptr{Srec}
+    labels::Ptr{Srec}
+    setToLabels::Ptr{SetToLabelsType}
+end
