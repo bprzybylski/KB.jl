@@ -1,4 +1,4 @@
-export SrecType, StorageType, KBMFlagStrings, Char, Gen, SetToLabelsType, Srec
+export SrecType, StorageType, KBMFlagStrings, Char, Gen, SetToLabelsType, Srec, TableStruc, FSA
 
 #=
     Enum name: SrecType
@@ -74,7 +74,7 @@ const SetToLabelsType=Int8
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h [20 / 45]
     Date: 2019-03-14
 =#
-MaxChar = MaxGen = 127
+const MaxChar = MaxGen = 127
 
 #=
     Struct name: Srec
