@@ -116,3 +116,31 @@ struct TableStruc
     table_data_dptr::Ptr{Ptr{Ptr{Int}}}
     ctable_data_ptr::Ptr{Ptr{UInt}}
 end
+
+#=
+    Const name: NumKBMFlagStrings
+    Original const name: num_kbm_flag_strings
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h [51]
+    Date: 2019-03-14
+=#
+const NumKBMFlagStrings = 8
+
+#=
+    Struct name: FSA
+    Original struct name: fsa
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [166--194]
+    Date: 2019-03-15
+=#
+struct FSA
+    states::Ptr{Srec}
+    alphabet::Ptr{Srec}
+    num_initial::Int
+    initial::Ptr{Int}
+    is_initial::Ptr{Bool}
+    num_accepting::Int
+    accepting::Ptr{Int}
+    is_accepting::Ptr{Bool}
+    is_accessible::Ptr{Bool}
+    flags::Ptr{Bool} # Originally boolean flags[num_kbm_flag_strings] (what to do about that?)
+    table::Ptr{TableStruc}
+end
