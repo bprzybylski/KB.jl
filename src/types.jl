@@ -97,3 +97,22 @@ struct Srec
     labels::Ptr{Srec}
     setToLabels::Ptr{SetToLabelsType}
 end
+
+#=
+    Struct name: TableStruc
+    Original struct name: table_struc
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [88-164]
+    Date: 2019-03-15
+=#
+struct TableStruc
+    filename::Ptr{Char}
+    table_type::StorageType
+    printing_format::StorageType
+    comment_state_numbers::Bool
+    numTransitions::Int
+    maxstates::Int
+    denserows::Int
+    table_data_ptr::Ptr{Ptr{Int}}
+    table_data_dptr::Ptr{Ptr{Ptr{Int}}}
+    ctable_data_ptr::Ptr{Ptr{UInt}}
+end
