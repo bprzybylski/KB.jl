@@ -3,8 +3,7 @@ export SrecType, StorageType, KBMFlagStrings, KBMOrderingsm, Char, Gen, SetToLab
 #=
     Enum name: SrecType
     Original enum name: srec_type
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [29--38]
-    Date: 2019-03-12
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:29-38
 =#
 @enum SrecType begin
     SIMPLE
@@ -20,8 +19,7 @@ end
 #=
     Enum name: StorageType
     Original enum name: storage_type
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [40]
-    Date: 2019-03-14
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:40
 =#
 @enum StorageType begin
     DENSE
@@ -32,8 +30,7 @@ end
 #=
     Enum name: KBMFlagStrings
     Original enum name: kbm_flag_strings
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [41--50]
-    Date: 2019-03-14
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:41-50
 =#
 @enum KBMFlagStrings begin
     DFA
@@ -49,8 +46,7 @@ end
 #=
     Enum name: KBMOrderings
     Original enum name: kbm_orderings
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h [15-22]
-    Date: 2019-03-16
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:15-22
 =#
 @enum KBMOrderings begin
     SHORTLEX
@@ -63,51 +59,46 @@ end
 
 #=
     Type name: Char
-    Date: 2019-03-14
 =#
 const Char = UInt8
 
 #=
     Type name: Gen (Char)
     Original type name: gen (char)
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h [46]
-    Date: 2019-03-14
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h:46
 =#
 const Gen = Char
 
 #=
     Type name: SetToLabelsType
     Original type name: setToLabelsType
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [55]
-    Date: 2019-03-14
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:55
 =#
 const SetToLabelsType = Int8
 
 #=
     Const name: MaxChar / MaxGen
     Original const name: MAXCHAR / MAXGEN
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h [20 / 45]
-    Date: 2019-03-14
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h:20,45
 =#
 const MaxChar = MaxGen = 127
 
 #=
     Struct name: Srec
     Original struct name: srec
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [57--86]
-    Date: 2019-03-14
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:57-86
 =#
 struct Srec
     type::SrecType
-    size::Int
+    size::Int32
     names::Ptr{Ptr{Char}}
     words::Ptr{Ptr{Gen}}
     wordslist::Ptr{Ptr{Ptr{Gen}}}
     intlist::Ptr{Ptr{Int}}
-    arity::Int
+    arity::Int32
     padding::Char
     alphabet::Ptr{Ptr{Char}} # Originally char *alphabet[MAXGEN + 1] (what to do about that?)
-    alphabet_size::Int
+    alphabet_size::Int32
     base::Ptr{Srec}
     labels::Ptr{Srec}
     setToLabels::Ptr{SetToLabelsType}
@@ -116,17 +107,16 @@ end
 #=
     Struct name: TableStruc
     Original struct name: table_struc
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [88-164]
-    Date: 2019-03-15
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:88-164
 =#
 struct TableStruc
     filename::Ptr{Char}
     table_type::StorageType
     printing_format::StorageType
     comment_state_numbers::Bool
-    numTransitions::Int
-    maxstates::Int
-    denserows::Int
+    numTransitions::Int32
+    maxstates::Int32
+    denserows::Int32
     table_data_ptr::Ptr{Ptr{Int}}
     table_data_dptr::Ptr{Ptr{Ptr{Int}}}
     ctable_data_ptr::Ptr{Ptr{UInt}}
@@ -135,24 +125,22 @@ end
 #=
     Const name: NumKBMFlagStrings
     Original const name: num_kbm_flag_strings
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h [51]
-    Date: 2019-03-15
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h:51
 =#
 const NumKBMFlagStrings = 8
 
 #=
     Struct name: FSA
     Original struct name: fsa
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [166--194]
-    Date: 2019-03-15
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:166-194
 =#
 struct FSA
     states::Ptr{Srec}
     alphabet::Ptr{Srec}
-    num_initial::Int
+    num_initial::Int32
     initial::Ptr{Int}
     is_initial::Ptr{Bool}
-    num_accepting::Int
+    num_accepting::Int32
     accepting::Ptr{Int}
     is_accepting::Ptr{Bool}
     is_accessible::Ptr{Bool}
@@ -163,20 +151,18 @@ end
 #=
     Struct name: WDR
     Original struct name: wdr
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h [115--119]
-    Date: 2019-03-16
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:115-119
 =#
 struct WDR
-    num_eqns::Int
-    num_states::Int
-    num_diff::Int
+    num_eqns::Int32
+    num_states::Int32
+    num_diff::Int32
 end
 
 #=
     Struct name: ReductionEquation
     Original struct name: reduction_equation
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h [34--40]
-    Date: 2019-03-16
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:34-40
 =#
 struct ReductionEquation
     lhs::Ptr{Gen}
@@ -189,8 +175,7 @@ end
 #=
     Struct name: RewritingSystem
     Original struct name: rewriting_system
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h [42--160]
-    Date: 2019-03-16
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:42-160
 =#
 struct RewritingSystem
     name::Ptr{Char} # Originally char name[256] (what to do about that?)
@@ -198,64 +183,64 @@ struct RewritingSystem
     weight::Ptr{Int}
     level::Ptr{Int}
     confluent::Bool
-    num_gens::Int
-    num_eqns::Int
-    num_inveqns::Int
+    num_gens::Int32
+    num_eqns::Int32
+    num_inveqns::Int32
     inv_of::Ptr{Int}
     gen_name::Ptr{Ptr{Char}}
     eqns::Ptr{ReductionEquation}
     reduction_fsa::Ptr{FSA}
-    num_states::Int
+    num_states::Int32
     worddiffs::Bool
     wd_fsa::Ptr{FSA}
     cosets::Bool
     wd_reorder::Bool
     new_wd::Ptr{Bool}
-    maxlenleft::Int
-    maxlenright::Int
-    maxoverlaplen::Int
+    maxlenleft::Int32
+    maxlenright::Int32
+    maxoverlaplen::Int32
     hadlongoverlap::Bool
-    rkminlen::Int
-    rkmineqns::Int
+    rkminlen::Int32
+    rkmineqns::Int32
     rk_on::Bool
     history::Ptr{Int}
     slowhistory::Ptr{Ptr{Int}}
     slowhistorysp::Ptr{Int}
     preflen::Ptr{Int}
     prefno::Ptr{Int}
-    maxpreflen::Int
+    maxpreflen::Int32
     outputprefixes::Bool
     testword1::Ptr{Gen}
     testword2::Ptr{Gen}
     sorteqns::Bool
-    tidyint::Int
+    tidyint::Int32
     eqn_no::Ptr{Int}
-    nneweqns::Int
-    tot_eqns::Int
-    hadct::Int
-    maxhad::Int
-    maxoplen::Int
+    nneweqns::Int32
+    tot_eqns::Int32
+    hadct::Int32
+    maxhad::Int32
+    maxoplen::Int32
     print_eqns::Bool
-    maxeqns::Int
+    maxeqns::Int32
     hadmaxeqns::Bool
-    confnum::Int
-    oldconfnum::Int
-    maxslowhistoryspace::Int
-    maxreducelen::Int
-    maxstates::Int
-    current_maxstates::Int
+    confnum::Int32
+    oldconfnum::Int32
+    maxslowhistoryspace::Int32
+    maxreducelen::Int32
+    maxstates::Int32
+    current_maxstates::Int32
     double_states::Bool
-    init_fsaspace::Int
-    maxwdiffs::Int
-    exit_status::Int
+    init_fsaspace::Int32
+    maxwdiffs::Int32
+    exit_status::Int32
     tidyon::Bool
     tidyon_now::Bool
     wd_record::Ptr{WDR}
-    num_cycles::Int
-    eqn_factor::Int
-    states_factor::Int
-    halting_factor::Int
-    min_time::Int
+    num_cycles::Int32
+    eqn_factor::Int32
+    states_factor::Int32
+    halting_factor::Int32
+    min_time::Int32
     halting::Bool
     do_conf_test::Bool
     lostinfo::Bool
@@ -270,10 +255,10 @@ struct RewritingSystem
     confnumset::Bool
     maxreducelenset::Bool
     maxwdiffset::Bool
-    separator::Int
-    maxlhsrellen::Int
-    maxsubgenlen::Int
-    maxcosetlen::Int
+    separator::Int32
+    maxlhsrellen::Int32
+    maxsubgenlen::Int32
+    maxcosetlen::Int32
     finitestop::Bool
     Hoverlaps::Bool
     Gislevel::Bool
@@ -286,14 +271,13 @@ end
 #=
     Struct name: ReductionStruct
     Original struct name: reduction_struct
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h [166--174]
-    Date: 2019-03-16
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:166-174
 =#
 struct ReductionStruct
     rws::Ptr{RewritingSystem}
     wd_fsa::Ptr{FSA}
-    separator::Int
+    separator::Int32
     wa::Ptr{FSA}
     weight::Ptr{Int}
-    maxreducelen::Int
+    maxreducelen::Int32
 end
