@@ -1,4 +1,4 @@
-export SrecType, StorageType, KBMFlagStrings, Char, Gen, SetToLabelsType, Srec, TableStruc, FSA
+export SrecType, StorageType, KBMFlagStrings, KBMOrderingsm, Char, Gen, SetToLabelsType, Srec, TableStruc, FSA, WDR, ReductionEquation, RewritingSystem, ReductionStruct
 
 #=
     Enum name: SrecType
@@ -65,7 +65,7 @@ end
     Type name: Char
     Date: 2019-03-14
 =#
-const Char=UInt8
+const Char = UInt8
 
 #=
     Type name: Gen (Char)
@@ -73,7 +73,7 @@ const Char=UInt8
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h [46]
     Date: 2019-03-14
 =#
-const Gen=Char
+const Gen = Char
 
 #=
     Type name: SetToLabelsType
@@ -81,7 +81,7 @@ const Gen=Char
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h [55]
     Date: 2019-03-14
 =#
-const SetToLabelsType=Int8
+const SetToLabelsType = Int8
 
 #=
     Const name: MaxChar / MaxGen
