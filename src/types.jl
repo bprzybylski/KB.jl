@@ -282,3 +282,18 @@ struct RewritingSystem
     wd_alphabet::Ptr{Srec}
     subwordsG::Ptr{Ptr{Gen}}
 end
+
+#=
+    Struct name: ReductionStruct
+    Original struct name: reduction_struct
+    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h [166--174]
+    Date: 2019-03-16
+=#
+struct ReductionStruct
+    rws::Ptr{RewritingSystem}
+    wd_fsa::Ptr{FSA}
+    separator::Int
+    wa::Ptr{FSA}
+    weight::Ptr{Int}
+    maxreducelen::Int
+end
