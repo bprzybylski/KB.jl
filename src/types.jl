@@ -88,7 +88,7 @@ const MaxChar = MaxGen = 127
     Original struct name: srec
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:57-86
 =#
-struct Srec
+mutable struct Srec
     type::SrecType
     size::Int32
     names::Ptr{Ptr{Char}}
@@ -109,7 +109,7 @@ end
     Original struct name: table_struc
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:88-164
 =#
-struct TableStruc
+mutable struct TableStruc
     filename::Ptr{Char}
     table_type::StorageType
     printing_format::StorageType
@@ -134,7 +134,7 @@ const NumKBMFlagStrings = 8
     Original struct name: fsa
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:166-194
 =#
-struct FSA
+mutable struct FSA
     states::Ptr{Srec}
     alphabet::Ptr{Srec}
     num_initial::Int32
@@ -153,7 +153,7 @@ end
     Original struct name: wdr
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:115-119
 =#
-struct WDR
+mutable struct WDR
     num_eqns::Int32
     num_states::Int32
     num_diff::Int32
@@ -164,7 +164,7 @@ end
     Original struct name: reduction_equation
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:34-40
 =#
-struct ReductionEquation
+mutable struct ReductionEquation
     lhs::Ptr{Gen}
     rhs::Ptr{Gen}
     done::Bool
@@ -177,7 +177,7 @@ end
     Original struct name: rewriting_system
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:42-160
 =#
-struct RewritingSystem
+mutable struct RewritingSystem
     name::Ptr{Char} # Originally char name[256] (what to do about that?)
     ordering::KBMOrderings
     weight::Ptr{Int}
@@ -266,6 +266,8 @@ struct RewritingSystem
     Hhasinverses::Bool
     wd_alphabet::Ptr{Srec}
     subwordsG::Ptr{Ptr{Gen}}
+    # Constructor
+    RewritingSystem() = new()
 end
 
 #=
@@ -273,11 +275,13 @@ end
     Original struct name: reduction_struct
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:166-174
 =#
-struct ReductionStruct
+mutable struct ReductionStruct
     rws::Ptr{RewritingSystem}
     wd_fsa::Ptr{FSA}
     separator::Int32
     wa::Ptr{FSA}
     weight::Ptr{Int}
     maxreducelen::Int32
+    # Constructor
+    ReductionStruct() = new()
 end
