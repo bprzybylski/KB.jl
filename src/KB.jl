@@ -9,5 +9,6 @@ else
 end
 
 include("types.jl")
+include("RWS.jl")
 
 end # module
