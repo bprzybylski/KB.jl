@@ -266,6 +266,8 @@ mutable struct RewritingSystem
     Hhasinverses::Bool
     wd_alphabet::Ptr{Srec}
     subwordsG::Ptr{Ptr{Gen}}
+    # Constructor
+    RewritingSystem() = new()
 end
 
 #=
@@ -280,4 +282,6 @@ mutable struct ReductionStruct
     wa::Ptr{FSA}
     weight::Ptr{Int}
     maxreducelen::Int32
+    # Constructor
+    ReductionStruct() = new()
 end
