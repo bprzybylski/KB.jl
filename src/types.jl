@@ -91,8 +91,8 @@ mutable struct Srec
     wordslist::Ptr{Ptr{Ptr{Gen}}}
     intlist::Ptr{Ptr{Int}}
     arity::Int32
-    alphabet::Ptr{Ptr{Char}} # Originally char *alphabet[MAXGEN + 1] (what to do about that?)
     padding::Cchar
+    alphabet::Ptr{NTuple{MaxGen+1,Cchar}} # Originally char *alphabet[MAXGEN + 1] (what to do about that?)
     alphabet_size::Int32
     base::Ptr{Srec}
     labels::Ptr{Srec}
@@ -139,7 +139,7 @@ mutable struct FSA
     accepting::Ptr{Int}
     is_accepting::Ptr{Bool}
     is_accessible::Ptr{Bool}
-    flags::Ptr{Bool} # Originally boolean flags[num_kbm_flag_strings] (what to do about that?)
+    flags::NTuple{8, Bool} # Originally boolean flags[num_kbm_flag_strings] (what to do about that?)
     table::Ptr{TableStruc}
 end
 
@@ -173,7 +173,7 @@ end
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:42-160
 =#
 mutable struct RewritingSystem
-    name::Ptr{Char} # Originally char name[256] (what to do about that?)
+    name::NTuple{256,Cchar} # Originally char name[256] (what to do about that?)
     ordering::KBMOrderings
     weight::Ptr{Int}
     level::Ptr{Int}
