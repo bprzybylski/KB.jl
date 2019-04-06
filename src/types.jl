@@ -1,4 +1,4 @@
-export SrecType, StorageType, KBMFlagStrings, KBMOrderingsm, Char, Gen, SetToLabelsType, Srec, TableStruc, FSA, WDR, ReductionEquation, RewritingSystem, ReductionStruct
+export SrecType, StorageType, KBMFlagStrings, KBMOrderingsm, Gen, SetToLabelsType, Srec, TableStruc, FSA, WDR, ReductionEquation, RewritingSystem, ReductionStruct
 
 #=
     Enum name: SrecType
@@ -58,16 +58,11 @@ end
 end
 
 #=
-    Type name: Char
-=#
-const Char = UInt8
-
-#=
     Type name: Gen (Char)
     Original type name: gen (char)
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h:46
 =#
-const Gen = Char
+const Gen = Cchar
 
 #=
     Type name: SetToLabelsType
@@ -91,13 +86,13 @@ const MaxChar = MaxGen = 127
 mutable struct Srec
     type::SrecType
     size::Int32
-    names::Ptr{Ptr{Char}}
+    names::Ptr{Ptr{Cchar}}
     words::Ptr{Ptr{Gen}}
     wordslist::Ptr{Ptr{Ptr{Gen}}}
     intlist::Ptr{Ptr{Int}}
     arity::Int32
-    padding::Char
     alphabet::Ptr{Ptr{Char}} # Originally char *alphabet[MAXGEN + 1] (what to do about that?)
+    padding::Cchar
     alphabet_size::Int32
     base::Ptr{Srec}
     labels::Ptr{Srec}
@@ -110,7 +105,7 @@ end
     Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:88-164
 =#
 mutable struct TableStruc
-    filename::Ptr{Char}
+    filename::Ptr{Cchar}
     table_type::StorageType
     printing_format::StorageType
     comment_state_numbers::Bool
@@ -187,7 +182,7 @@ mutable struct RewritingSystem
     num_eqns::Int32
     num_inveqns::Int32
     inv_of::Ptr{Int}
-    gen_name::Ptr{Ptr{Char}}
+    gen_name::Ptr{Ptr{Cchar}}
     eqns::Ptr{ReductionEquation}
     reduction_fsa::Ptr{FSA}
     num_states::Int32
