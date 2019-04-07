@@ -263,7 +263,7 @@ mutable struct RewritingSystem
     subwordsG::Ptr{Ptr{Gen}}
     # Constructor
     function RewritingSystem()
-        rws = new()
+        rws = new(ntuple(_->Cchar(0), 256))
         rws_ptr = Base.unsafe_convert(Ptr{KB.RewritingSystem}, Ref(rws))
         ccall((:set_defaults, KB.fsalib),
             Cvoid,
