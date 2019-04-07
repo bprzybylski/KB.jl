@@ -5,6 +5,8 @@
  *
  */
 
+#include <stdio.h>
+
 #include "defs.h"
 #include "../src/definitions.h"
 

@@ -1,7 +1,35 @@
-export RewritingSystemInit, ReadKBInput
-
-mutable struct FILE
+function fopen(filename::String, mode::String="r")
+    file = ccall(:fopen,
+                 Ptr{Cvoid},
+                 (Cstring, Cstring),
+                 filename, mode)
+    file == C_NULL && error("Error while reading $filename.")
+    return file
 end
+
+fclose(file) = ccall(:fclose,
+                     Cint,
+                     (Ptr{Cvoid},),
+                     file)
+
+function RewritingSystem(filename::String,
+    rws::RewritingSystem=RewritingSystem(); check::Bool=false)
+
+    rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
+    input = fopen(filename)
+
+    ccall((:read_kbinput, fsalib),
+          Cvoid,
+          (Ptr{Cvoid}, Bool, Ptr{RewritingSystem}),
+          input, check, rws_ptr)
+
+    fclose(input)
+
+    return rws
+end
+
+
+export RewritingSystemInit, ReadKBInput
 
 function RewritingSystemInit(rws::KB.RewritingSystem, cosets::Bool)
     # Called function name: set_defaults
@@ -42,19 +70,5 @@ function RewritingSystemInit(rws::KB.RewritingSystem, cosets::Bool)
 end
 
 RewritingSystemInit(rws::KB.RewritingSystem) = RewritingSystemInit(rws, false)
-
-function RewritingSystemLoad(rws::KB.RewritingSystem, filename::String, check::Bool)
-    input = ccall((:fopen, "libc"),
-                  Ptr{FILE},
-                  (Cstring, Cstring),
-                  filename, "r")
-
-    ccall((:read_kbinput, KB.fsalib),
-          Cvoid,
-          (Ptr{FILE}, Bool, Ptr{KB.RewritingSystem}),
-          input, check, Ref(rws))
-
-    return output
-end
 
 RewritingSystemLoad(rws::KB.RewritingSystem, filename::String) = RewritingSystemLoad(rws, filename, false)

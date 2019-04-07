@@ -52,4 +52,4 @@ function installkbmag(version::VersionNumber, force=false)
 end
 
 # download and build dependencies
-installkbmag(v"1.5.6")
+installkbmag(v"1.5.6", true)
