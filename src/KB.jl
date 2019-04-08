@@ -11,4 +11,6 @@ end
 include("types.jl")
 include("RWS.jl")
 
+include("debug.jl")
+
 end # module
