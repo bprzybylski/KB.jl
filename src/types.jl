@@ -139,7 +139,7 @@ mutable struct FSA
     accepting::Ptr{Int}
     is_accepting::Ptr{Bool}
     is_accessible::Ptr{Bool}
-    flags::NTuple{8, Bool} # Originally boolean flags[num_kbm_flag_strings] (what to do about that?)
+    flags::NTuple{NumKBMFlagStrings, Bool} # Originally boolean flags[num_kbm_flag_strings] (what to do about that?)
     table::Ptr{TableStruc}
 end
 
