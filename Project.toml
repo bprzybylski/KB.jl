@@ -1,6 +1,6 @@
 name = "KB"
 uuid = "e986fbee-1a5e-11e9-32b1-2b4c933ec7d8"
-authors = ["kalmarek <kalmar@amu.edu.pl>"]
+authors = ["kalmarek <kalmar@amu.edu.pl>", "bprzybylski <bap@amu.edu.pl>"]
 version = "0.1.0"
 
 [deps]
