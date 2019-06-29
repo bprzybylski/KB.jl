@@ -1,5 +1,3 @@
-export SrecType, StorageType, KBMFlagStrings, KBMOrderingsm, Gen, SetToLabelsType, Srec, TableStruc, FSA, WDR, ReductionEquation, RewritingSystem, ReductionStruct
-
 #=
     Enum name: SrecType
     Original enum name: srec_type
@@ -92,7 +90,7 @@ mutable struct Srec
     intlist::Ptr{Ptr{Int}}
     arity::Int32
     padding::Cchar
-    alphabet::Ptr{NTuple{MaxGen+1,Cchar}} # Originally char *alphabet[MAXGEN + 1] (what to do about that?)
+    alphabet::Ptr{NTuple{MaxGen+1,Cchar}} # Originally char *alphabet[MAXGEN + 1]
     alphabet_size::Int32
     base::Ptr{Srec}
     labels::Ptr{Srec}
