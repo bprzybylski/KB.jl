@@ -1,42 +1,30 @@
-function fopen(filename::String, mode::String="r")
-    file = ccall(:fopen,
-                 Ptr{Cvoid},
-                 (Cstring, Cstring),
-                 filename, mode)
-    file == C_NULL && error("Error while reading $filename.")
-    return file
-end
-
-fclose(file) = ccall(:fclose,
-                     Cint,
-                     (Ptr{Cvoid},),
-                     file)
-
-function RewritingSystem(filename::String,
-    rws::RewritingSystem=RewritingSystem(); check::Bool=false)
+function LoadFromFile(filename::String,
+                      rws::RewritingSystem = RewritingSystem(),
+                      check::Bool = false)
 
     rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
-    input = fopen(filename)
+    file_hdlr = open(filename, "r")
+    c_file_hdlr = Libc.FILE(file_hdlr)
 
+    # Called function name: read_kbinput
+    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsio.c:224
     ccall((:read_kbinput, fsalib),
           Cvoid,
           (Ptr{Cvoid}, Bool, Ptr{RewritingSystem}),
-          input, check, rws_ptr)
+          c_file_hdlr, check, rws_ptr)
 
-    fclose(input)
+    close(file_hdlr)
 
     return rws
 end
 
-
-export RewritingSystemInit, ReadKBInput
-
-function RewritingSystemInit(rws::KB.RewritingSystem, cosets::Bool)
+function Init(rws::RewritingSystem = RewritingSystem(),
+              cosets::Bool = false)
     # Called function name: set_defaults
     # Source: ./deps/src/kbmag-1.5.6/standalone/lib/kbfns.c:59
     ccall((:set_defaults, KB.fsalib),
           Cvoid,
-          (Ptr{KB.RewritingSystem}, Bool),
+          (Ptr{RewritingSystem}, Bool),
           Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws)), cosets)
 
     # Set values
@@ -47,7 +35,7 @@ function RewritingSystemInit(rws::KB.RewritingSystem, cosets::Bool)
     rws.Gislevel = false
 
     # Set pointers
-    rws.name = C_NULL
+    rws.name = ntuple(_->Cchar(0), 256)
         #rws.weight = C_NULL
         #rws.level = C_NULL
         #rws.inv_of = C_NULL
@@ -67,8 +55,6 @@ function RewritingSystemInit(rws::KB.RewritingSystem, cosets::Bool)
         #rws.wd_record = C_NULL
         #rws.wd_alphabet = C_NULL
         #rws.subwordsG = C_NULL
+
+    return rws
 end
-
-RewritingSystemInit(rws::KB.RewritingSystem) = RewritingSystemInit(rws, false)
-
-RewritingSystemLoad(rws::KB.RewritingSystem, filename::String) = RewritingSystemLoad(rws, filename, false)
