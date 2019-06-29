@@ -137,8 +137,10 @@ mutable struct FSA
     accepting::Ptr{Int}
     is_accepting::Ptr{Bool}
     is_accessible::Ptr{Bool}
-    flags::NTuple{NumKBMFlagStrings, Bool} # Originally boolean flags[num_kbm_flag_strings] (what to do about that?)
+    flags::NTuple{NumKBMFlagStrings, Bool} # Originally boolean flags[num_kbm_flag_strings]
     table::Ptr{TableStruc}
+    # Constructor
+    FSA() = new()
 end
 
 #=
@@ -262,8 +264,8 @@ mutable struct RewritingSystem
     # Constructor
     function RewritingSystem()
         rws = new(ntuple(_->Cchar(0), 256))
-        rws_ptr = Base.unsafe_convert(Ptr{KB.RewritingSystem}, Ref(rws))
-        ccall((:set_defaults, KB.fsalib),
+        rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
+        ccall((:set_defaults, fsalib),
             Cvoid,
             (Ptr{KB.RewritingSystem}, Bool),
             rws_ptr, false)

@@ -1,8 +1,9 @@
-function LoadFromFile(filename::String,
-                      rws::RewritingSystem = RewritingSystem(),
-                      check::Bool = false)
+function Load(filename::String,
+              rws::RewritingSystem = RewritingSystem(),
+              check::Bool = false)
 
     rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
+
     file_hdlr = open(filename, "r")
     c_file_hdlr = Libc.FILE(file_hdlr)
 
@@ -57,4 +58,13 @@ function Init(rws::RewritingSystem = RewritingSystem(),
         #rws.subwordsG = C_NULL
 
     return rws
+end
+
+function Prog(rws::RewritingSystem)::Int
+    # Called function name: kbprog
+    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/kbfns.c:129
+    return ccall((:kbprog, fsalib),
+                 Cint,
+                 (Ptr{RewritingSystem},),
+                 Ref(rws))
 end
