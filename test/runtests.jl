@@ -1,6 +1,6 @@
 using Test
-using KB
+using KBmag
 
 # Library integration
 m = "hello, world!"
-@test length(m) == ccall((:stringlen, KB.fsalib), Cint, (Cstring,), m)
+@test length(m) == ccall((:stringlen, KBmag.fsalib), Cint, (Cstring,), m)

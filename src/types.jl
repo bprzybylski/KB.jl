@@ -267,7 +267,7 @@ mutable struct RewritingSystem
         rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
         ccall((:set_defaults, fsalib),
             Cvoid,
-            (Ptr{KB.RewritingSystem}, Bool),
+            (Ptr{RewritingSystem}, Bool),
             rws_ptr, false)
         return rws
     end

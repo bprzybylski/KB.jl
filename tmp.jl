@@ -2,10 +2,10 @@ using Pkg
 Pkg.activate(".")
 # Pkg.build()
 
-using KB
+using KBmag
 
 msg = "hi!"
-ccall((:stringlen, KB.fsalib), Cint, (Cstring,), msg)
+ccall((:stringlen, KBmag.fsalib), Cint, (Cstring,), msg)
 
 function name(rws::RewritingSystem)
     k = findfirst(i -> i == 0, rws.name)
@@ -26,17 +26,17 @@ begin
     println(join(lines, "\n"))
 end
 
-rws = KB.RewritingSystem()
+rws = KBmag.RewritingSystem()
 name(rws)
 RewritingSystem(example_file, rws)
 name(rws)
 @show rws;
 
 function read_rws(filename, rws; check=false)
-    rws_ptr = Base.unsafe_convert(Ptr{KB.RewritingSystem}, Ref(rws))
-    r = ccall((:read_rws, KB.fsalib),
+    rws_ptr = Base.unsafe_convert(Ptr{KBmag.RewritingSystem}, Ref(rws))
+    r = ccall((:read_rws, KBmag.fsalib),
         Cint,
-        (Cstring, Bool, Ptr{KB.RewritingSystem}),
+        (Cstring, Bool, Ptr{KBmag.RewritingSystem}),
         filename, false, rws_ptr)
 
     r == 0 || error("Error while reading $filename.")
@@ -44,7 +44,7 @@ function read_rws(filename, rws; check=false)
     return rws
 end
 
-rws = KB.RewritingSystem()
+rws = KBmag.RewritingSystem()
 name(rws)
 read_rws(example_file, rws)
 name(rws)
