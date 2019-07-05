@@ -1,7 +1,7 @@
 function Load(filename::String,
               rws::RewritingSystem = RewritingSystem(),
               check::Bool = false)
-
+    # Pointer to rws
     rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
 
     file_hdlr = open(filename, "r")
@@ -21,12 +21,16 @@ end
 
 function Init(rws::RewritingSystem = RewritingSystem(),
               cosets::Bool = false)
+
+    # Pointer to rws
+    rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
+
     # Called function name: set_defaults
     # Source: ./deps/src/kbmag-1.5.6/standalone/lib/kbfns.c:59
-    ccall((:set_defaults, KB.fsalib),
+    ccall((:set_defaults, fsalib),
           Cvoid,
           (Ptr{RewritingSystem}, Bool),
-          Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws)), cosets)
+          rws_ptr, cosets)
 
     # Set values
     rws.num_gens = Int32(0)
@@ -67,4 +71,23 @@ function Prog(rws::RewritingSystem)::Int
                  Cint,
                  (Ptr{RewritingSystem},),
                  Ref(rws))
+end
+
+function Reduce(w::String,
+                rws::RewritingSystem)::Int
+
+    rs = ReductionStruct()
+    rs.rws = Ptr{RewritingSystem}(pointer_from_objref(rws))
+    rs.wd_fsa = rws.wd_fsa
+    separator = rws.num_gens
+    wa = C_NULL
+    weight = rws.weight
+    maxreducelen = Int32(32767)
+
+    # Called function name: rws_reduce
+    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsreduce.c:27
+    return ccall((:rws_reduce, fsalib),
+                 Cint,
+                 (Ptr{Gen}, Ptr{ReductionStruct}),
+                 pointer(w), Ref(rs))
 end
