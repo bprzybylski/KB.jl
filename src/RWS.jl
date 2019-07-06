@@ -4,17 +4,16 @@ function Load(filename::String,
     # Pointer to rws
     rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
 
-    file_hdlr = open(filename, "r")
-    c_file_hdlr = Libc.FILE(file_hdlr)
+    open(filename, "r") do file_hdlr
+        c_file_hdlr = Libc.FILE(file_hdlr)
 
-    # Called function name: read_kbinput
-    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsio.c:224
-    ccall((:read_kbinput, fsalib),
-          Cvoid,
-          (Ptr{Cvoid}, Bool, Ptr{RewritingSystem}),
-          c_file_hdlr, check, rws_ptr)
-
-    close(file_hdlr)
+        # Called function name: read_kbinput
+        # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsio.c:224
+        ccall((:read_kbinput, fsalib),
+            Cvoid,
+            (Ptr{Cvoid}, Bool, Ptr{RewritingSystem}),
+            c_file_hdlr, check, rws_ptr)
+    end
 
     return rws
 end
