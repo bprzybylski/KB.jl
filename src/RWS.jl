@@ -63,7 +63,8 @@ function Init(rws::RewritingSystem = RewritingSystem(),
     return rws
 end
 
-function Prog(rws::RewritingSystem)::Int
+function Prog(rws::RewritingSystem)
+    @info "Running Knuth-Bendix completion"
     # Called function name: kbprog
     # Source: ./deps/src/kbmag-1.5.6/standalone/lib/kbfns.c:129
     return ccall((:kbprog, fsalib),
@@ -72,15 +73,21 @@ function Prog(rws::RewritingSystem)::Int
                  Ref(rws))
 end
 
-function Reduce(w::String,
-                rws::RewritingSystem)::Int
+function Reduce(w,
+                rws::RewritingSystem)
 
     rs = ReductionStruct(rws)
 
     # Called function name: rws_reduce
     # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsreduce.c:27
-    return ccall((:rws_reduce, fsalib),
+
+    @info "Reducing $w via RewritingSystem"
+
+    r = ccall((:rws_reduce, fsalib),
                  Cint,
-                 (Ptr{Gen}, Ptr{ReductionStruct}),
-                 pointer(w), Ref(rs))
+                 (Ptr{Gen}, Ref{ReductionStruct}),
+                 w, rs)
+    iszero(r) || error(
+        "Call to rws_reduce in $fsalib returned non-zero output: $r")
+    return w
 end
