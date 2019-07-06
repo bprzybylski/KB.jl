@@ -287,4 +287,15 @@ mutable struct ReductionStruct
     maxreducelen::Int32
     # Constructor
     ReductionStruct() = new()
+
+    function ReductionStruct(rws::RewritingSystem)
+        return new(
+            Ptr{RewritingSystem}(pointer_from_objref(rws)),
+            rws.wd_fsa,
+            0,
+            C_NULL,
+            rws.weight,
+            32767
+        )
+    end
 end

@@ -75,13 +75,7 @@ end
 function Reduce(w::String,
                 rws::RewritingSystem)::Int
 
-    rs = ReductionStruct()
-    rs.rws = Ptr{RewritingSystem}(pointer_from_objref(rws))
-    rs.wd_fsa = rws.wd_fsa
-    separator = rws.num_gens
-    wa = C_NULL
-    weight = rws.weight
-    maxreducelen = Int32(32767)
+    rs = ReductionStruct(rws)
 
     # Called function name: rws_reduce
     # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsreduce.c:27
