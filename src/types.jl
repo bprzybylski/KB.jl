@@ -87,7 +87,7 @@ mutable struct Srec
     names::Ptr{Ptr{Cchar}}
     words::Ptr{Ptr{Gen}}
     wordslist::Ptr{Ptr{Ptr{Gen}}}
-    intlist::Ptr{Ptr{Int}}
+    intlist::Ptr{Ptr{Int32}}
     arity::Int32
     padding::Cchar
     alphabet::Ptr{NTuple{MaxGen+1,Cchar}} # Originally char *alphabet[MAXGEN + 1]
@@ -110,8 +110,8 @@ mutable struct TableStruc
     numTransitions::Int32
     maxstates::Int32
     denserows::Int32
-    table_data_ptr::Ptr{Ptr{Int}}
-    table_data_dptr::Ptr{Ptr{Ptr{Int}}}
+    table_data_ptr::Ptr{Ptr{Int32}}
+    table_data_dptr::Ptr{Ptr{Ptr{Int32}}}
     ctable_data_ptr::Ptr{Ptr{UInt}}
 end
 
@@ -131,10 +131,10 @@ mutable struct FSA
     states::Ptr{Srec}
     alphabet::Ptr{Srec}
     num_initial::Int32
-    initial::Ptr{Int}
+    initial::Ptr{Int32}
     is_initial::Ptr{Bool}
     num_accepting::Int32
-    accepting::Ptr{Int}
+    accepting::Ptr{Int32}
     is_accepting::Ptr{Bool}
     is_accessible::Ptr{Bool}
     flags::NTuple{NumKBMFlagStrings, Bool} # Originally boolean flags[num_kbm_flag_strings]
@@ -175,13 +175,13 @@ end
 mutable struct RewritingSystem
     name::NTuple{256,Cchar} # Originally char name[256] (what to do about that?)
     ordering::KBMOrderings
-    weight::Ptr{Int}
-    level::Ptr{Int}
+    weight::Ptr{Int32}
+    level::Ptr{Int32}
     confluent::Bool
     num_gens::Int32
     num_eqns::Int32
     num_inveqns::Int32
-    inv_of::Ptr{Int}
+    inv_of::Ptr{Int32}
     gen_name::Ptr{Ptr{Cchar}}
     eqns::Ptr{ReductionEquation}
     reduction_fsa::Ptr{FSA}
@@ -198,18 +198,18 @@ mutable struct RewritingSystem
     rkminlen::Int32
     rkmineqns::Int32
     rk_on::Bool
-    history::Ptr{Int}
-    slowhistory::Ptr{Ptr{Int}}
-    slowhistorysp::Ptr{Int}
-    preflen::Ptr{Int}
-    prefno::Ptr{Int}
+    history::Ptr{Int32}
+    slowhistory::Ptr{Ptr{Int32}}
+    slowhistorysp::Ptr{Int32}
+    preflen::Ptr{Int32}
+    prefno::Ptr{Int32}
     maxpreflen::Int32
     outputprefixes::Bool
     testword1::Ptr{Gen}
     testword2::Ptr{Gen}
     sorteqns::Bool
     tidyint::Int32
-    eqn_no::Ptr{Int}
+    eqn_no::Ptr{Int32}
     nneweqns::Int32
     tot_eqns::Int32
     hadct::Int32
@@ -283,7 +283,7 @@ mutable struct ReductionStruct
     wd_fsa::Ptr{FSA}
     separator::Int32
     wa::Ptr{FSA}
-    weight::Ptr{Int}
+    weight::Ptr{Int32}
     maxreducelen::Int32
     # Constructor
     ReductionStruct() = new()
