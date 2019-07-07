@@ -7,7 +7,7 @@ deps_file = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
 if isfile(deps_file)
     include(deps_file)
 else
-    error("KBmag not properly installed. Please (re) build KBmag and restart julia")
+    error("KBmag not properly installed. Please (re) build KBmag and restart Julia")
 end
 
 include("types.jl")
