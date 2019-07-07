@@ -90,21 +90,3 @@ function Prog(rws::RewritingSystem)
                  Ref(rws))
 end
 
-function Reduce(w,
-                rws::RewritingSystem)
-
-    rs = ReductionStruct(rws)
-
-    # Called function name: rws_reduce
-    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsreduce.c:27
-
-    @info "Reducing $w via RewritingSystem"
-
-    r = ccall((:rws_reduce, fsalib),
-                 Cint,
-                 (Ptr{Gen}, Ref{ReductionStruct}),
-                 w, rs)
-    iszero(r) || error(
-        "Call to rws_reduce in $fsalib returned non-zero output: $r")
-    return w
-end

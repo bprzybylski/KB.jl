@@ -10,6 +10,7 @@ end
 
 include("types.jl")
 include("RWS.jl")
+include("reduce.jl")
 
 include("debug.jl")
 
