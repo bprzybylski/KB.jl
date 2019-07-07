@@ -20,3 +20,25 @@ function Base.show(io::IO, kbt::KBType)
         println(io, " • ", name, " → ", content)
     end
 end
+
+# kbmag stores gen* NUL terminated (like strings)
+function unsafe_load_ptrGen(v::Ptr{Gen})
+    result = Vector{Gen}()
+    idx = 1
+    while true
+        a = unsafe_load(v, idx)
+        iszero(a) && break
+        push!(result, a)
+        idx += 1
+    end
+    return result
+end
+
+function Base.show(io::IO, re::ReductionEquation)
+    lhs, rhs = unsafe_load_ptrGen(re.lhs), unsafe_load_ptrGen(re.rhs)
+    println(io, "ReductionEquation (in rws generators):")
+    println(io, "\t$lhs  → $rhs")
+end
+
+eqns(rws::RewritingSystem) = [unsafe_load(rws.eqns, i) for i in 2:rws.num_eqns+1]
+# the first one holds garbage??

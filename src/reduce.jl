@@ -12,4 +12,9 @@ function reduce!(w::Vector{Gen}, rws::RewritingSystem)
     return w
 end
 
+function gen_names(rws::RewritingSystem)
+    # the first one holds garbage?
+    v = [unsafe_load(rws.gen_name, i) for i in 2:rws.num_gens+1]
+    return String.(reinterpret.(UInt8, unsafe_load_ptrGen.(v)))
 end
+
