@@ -1,6 +1,6 @@
 function load(filename::String,
               rws::RewritingSystem = RewritingSystem(),
-              check::Bool = false)
+              check::Bool = true)
 
     open(filename, "r") do file_hdlr
         c_file_hdlr = Libc.FILE(file_hdlr)
@@ -25,9 +25,9 @@ function save(filename::String,
         # Called function name: print_kboutput
         # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsio.c:579
         ccall((:print_kboutput, fsalib),
-        Cvoid,
-        (Ptr{Cvoid}, Ref{RewritingSystem}),
-        c_file_hdlr, Ref(rws))
+            Cvoid,
+            (Ptr{Cvoid}, Ref{RewritingSystem}),
+            c_file_hdlr, Ref(rws))
     end
     @info "Succesfully written file $filename"
     return nothing

@@ -2,8 +2,10 @@ module KBmag
 
 using Libdl
 
-if isfile(joinpath(dirname(@__FILE__), "..", "deps", "deps.jl"))
-    include("../deps/deps.jl")
+deps_file = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
+
+if isfile(deps_file)
+    include(deps_file)
 else
     error("KBmag not properly installed. Please (re) build KBmag and restart julia")
 end
