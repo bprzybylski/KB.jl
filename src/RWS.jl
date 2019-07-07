@@ -1,8 +1,6 @@
 function load(filename::String,
               rws::RewritingSystem = RewritingSystem(),
               check::Bool = false)
-    # Pointer to rws
-    rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
 
     open(filename, "r") do file_hdlr
         c_file_hdlr = Libc.FILE(file_hdlr)
@@ -11,8 +9,8 @@ function load(filename::String,
         # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsio.c:224
         ccall((:read_kbinput, fsalib),
             Cvoid,
-            (Ptr{Cvoid}, Bool, Ptr{RewritingSystem}),
-            c_file_hdlr, check, rws_ptr)
+            (Ptr{Cvoid}, Bool, Ref{RewritingSystem}),
+            c_file_hdlr, check, Ref(rws))
     end
 
     return rws
@@ -28,7 +26,7 @@ function save(filename::String,
         # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsio.c:579
         ccall((:print_kboutput, fsalib),
         Cvoid,
-        (Ptr{Cvoid}, Ptr{RewritingSystem}),
+        (Ptr{Cvoid}, Ref{RewritingSystem}),
         c_file_hdlr, Ref(rws))
     end
     @info "Succesfully written file $filename"

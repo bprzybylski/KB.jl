@@ -268,7 +268,7 @@ mutable struct RewritingSystem
         ccall((:set_defaults, fsalib),
             Cvoid,
             (Ptr{RewritingSystem}, Bool),
-            rws_ptr, false)
+            Ref(rws), false)
         return rws
     end
 end
