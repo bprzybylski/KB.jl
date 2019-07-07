@@ -33,6 +33,19 @@ function save(filename::String,
     return nothing
 end
 
+function knuthbendix!(rws::RewritingSystem)
+    @info "Running Knuth-Bendix completion"
+    # Called function name: kbprog
+    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/kbfns.c:129
+    r = return ccall((:kbprog, fsalib),
+                 Cint,
+                 (Ref{RewritingSystem},),
+                 Ref(rws))
+    iszero(r) || "Knuth-Bendix completion returned non-zero status: $r"
+
+    return rws
+end
+
 function Init(rws::RewritingSystem = RewritingSystem(),
               cosets::Bool = false)
 
@@ -77,14 +90,3 @@ function Init(rws::RewritingSystem = RewritingSystem(),
 
     return rws
 end
-
-function Prog(rws::RewritingSystem)
-    @info "Running Knuth-Bendix completion"
-    # Called function name: kbprog
-    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/kbfns.c:129
-    return ccall((:kbprog, fsalib),
-                 Cint,
-                 (Ptr{RewritingSystem},),
-                 Ref(rws))
-end
-
