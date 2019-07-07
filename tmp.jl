@@ -1,55 +1,50 @@
 using Pkg
 Pkg.activate(".")
 # Pkg.build()
-
 using KBmag
 
-msg = "hi!"
-ccall((:stringlen, KBmag.fsalib), Cint, (Cstring,), msg)
-
-function name(rws::RewritingSystem)
-    k = findfirst(i -> i == 0, rws.name)
+function name(rws::KBmag.RewritingSystem)
+    k = findfirst(iszero, rws.name)
     k == 1 && return ""
     return String(reinterpret(UInt8, collect(rws.name[1:k-1])))
 end
 
-
-begin
+example_rws, rws_rec_string = let
     kb_data_dir = joinpath("deps", "src", "kbmag-1.5.6", "standalone", "kb_data")
-
     kb_examples = readdir(kb_data_dir)
-    example_file = joinpath(kb_data_dir, kb_examples[14])
-    lines = open(ex, "r") do f
+    fname = joinpath(kb_data_dir, kb_examples[1])
+    lines = open(fname, "r") do f
         readlines(f)
     end
-
-    println(join(lines, "\n"))
+    fcontent = join(lines, "\n")
+    fname, fcontent
 end
 
-rws = KBmag.RewritingSystem()
-name(rws)
-RewritingSystem(example_file, rws)
-name(rws)
-@show rws;
+println(rws_rec_string)
 
-function read_rws(filename, rws; check=false)
-    rws_ptr = Base.unsafe_convert(Ptr{KBmag.RewritingSystem}, Ref(rws))
-    r = ccall((:read_rws, KBmag.fsalib),
-        Cint,
-        (Cstring, Bool, Ptr{KBmag.RewritingSystem}),
-        filename, false, rws_ptr)
+begin
+    rws = KBmag.RewritingSystem();
+    KBmag.load(example_rws, rws);
+    @show name(rws);
+    @show rws.num_eqns
+    KBmag.knuthbendix!(rws)
+    @show rws.num_eqns
+    KBmag.save("/tmp/aaa", rws)
+end;
 
-    r == 0 || error("Error while reading $filename.")
+KBmag.ReductionStruct(rws)
 
-    return rws
+let (a,A,b,B,c) = [String(UInt8[i]) for i in 1:5]
+    w = b*b
+    v= reinterpret(Int8, Vector{UInt8}(w))
+    @show w v
+    KBmag.reduce!(v, rws)
+    @show v
+end;
+
+@show KBmag.gen_names(rws)
+
+let w = "b*b"
+    @show w
+    @show KBmag.reduce(w, rws)
 end
-
-rws = KBmag.RewritingSystem()
-name(rws)
-read_rws(example_file, rws)
-name(rws)
-@show rws;
-
-
-read_rws(ex, rws)
-@show rws;
