@@ -21,7 +21,7 @@ function Base.show(io::IO, kbt::KBType)
     end
 end
 
-# kbmag stores gen* NUL terminated (like strings)
+# kbmag stores gen* NULL terminated (like strings)
 function unsafe_load_ptrGen(v::Ptr{Gen})
     result = Vector{Gen}()
     idx = 1
@@ -40,5 +40,6 @@ function Base.show(io::IO, re::ReductionEquation)
     println(io, "\t$lhs  → $rhs")
 end
 
+# In the following, we ommit the first element of rws.eqns as it is garbage
+# (kbmag does not use array elements indexed with zero)
 eqns(rws::RewritingSystem) = [unsafe_load(rws.eqns, i) for i in 2:rws.num_eqns+1]
-# the first one holds garbage??

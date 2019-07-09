@@ -1,8 +1,5 @@
-#=
-    Enum name: SrecType
-    Original enum name: srec_type
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:29-38
-=#
+# Original enum name: srec_type
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/fsa.h:29-38
 @enum SrecType begin
     SIMPLE
     IDENTIFIERS
@@ -14,22 +11,16 @@
     PRODUCT
 end
 
-#=
-    Enum name: StorageType
-    Original enum name: storage_type
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:40
-=#
+# Original enum name: storage_type
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/fsa.h:40
 @enum StorageType begin
     DENSE
     SPARSE
     COMPACT
 end
 
-#=
-    Enum name: KBMFlagStrings
-    Original enum name: kbm_flag_strings
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:41-50
-=#
+# Original enum name: kbm_flag_strings
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/fsa.h:41-50
 @enum KBMFlagStrings begin
     DFA
     NFA
@@ -41,11 +32,8 @@ end
     RWS
 end
 
-#=
-    Enum name: KBMOrderings
-    Original enum name: kbm_orderings
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:15-22
-=#
+# Original enum name: kbm_orderings
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/rws.h:15-22
 @enum KBMOrderings begin
     SHORTLEX
     RECURSIVE
@@ -55,32 +43,20 @@ end
     NONE
 end
 
-#=
-    Type name: Gen (Char)
-    Original type name: gen (char)
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h:46
-=#
+# Original type name: gen (char)
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/defs.h:46
 const Gen = Cchar
 
-#=
-    Type name: SetToLabelsType
-    Original type name: setToLabelsType
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:55
-=#
+# Original type name: setToLabelsType
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/fsa.h:55
 const SetToLabelsType = Int8
 
-#=
-    Const name: MaxChar / MaxGen
-    Original const name: MAXCHAR / MAXGEN
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h:20,45
-=#
+# Original const name: MAXCHAR / MAXGEN
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/defs.h:20,45
 const MaxChar = MaxGen = 127
 
-#=
-    Struct name: Srec
-    Original struct name: srec
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:57-86
-=#
+# Original struct name: srec
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/fsa.h:57-86
 mutable struct Srec
     type::SrecType
     size::Int32
@@ -97,11 +73,8 @@ mutable struct Srec
     setToLabels::Ptr{SetToLabelsType}
 end
 
-#=
-    Struct name: TableStruc
-    Original struct name: table_struc
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:88-164
-=#
+# Original struct name: table_struc
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/fsa.h:88-164
 mutable struct TableStruc
     filename::Ptr{Cchar}
     table_type::StorageType
@@ -115,18 +88,12 @@ mutable struct TableStruc
     ctable_data_ptr::Ptr{Ptr{UInt}}
 end
 
-#=
-    Const name: NumKBMFlagStrings
-    Original const name: num_kbm_flag_strings
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/defs.h:51
-=#
+# Original const name: num_kbm_flag_strings
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/defs.h:51
 const NumKBMFlagStrings = 8
 
-#=
-    Struct name: FSA
-    Original struct name: fsa
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/fsa.h:166-194
-=#
+# Original struct name: fsa
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/fsa.h:166-194
 mutable struct FSA
     states::Ptr{Srec}
     alphabet::Ptr{Srec}
@@ -143,22 +110,16 @@ mutable struct FSA
     FSA() = new()
 end
 
-#=
-    Struct name: WDR
-    Original struct name: wdr
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:115-119
-=#
+# Original struct name: wdr
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/rws.h:115-119
 mutable struct WDR
     num_eqns::Int32
     num_states::Int32
     num_diff::Int32
 end
 
-#=
-    Struct name: ReductionEquation
-    Original struct name: reduction_equation
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:34-40
-=#
+# Original struct name: reduction_equation
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/rws.h:34-40
 mutable struct ReductionEquation
     lhs::Ptr{Gen}
     rhs::Ptr{Gen}
@@ -167,11 +128,8 @@ mutable struct ReductionEquation
     eliminated::Bool
 end
 
-#=
-    Struct name: RewritingSystem
-    Original struct name: rewriting_system
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:42-160
-=#
+# Original struct name: rewriting_system
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/rws.h:42-160
 mutable struct RewritingSystem
     name::NTuple{256,Cchar} # Originally char name[256] (what to do about that?)
     ordering::KBMOrderings
@@ -273,11 +231,8 @@ mutable struct RewritingSystem
     end
 end
 
-#=
-    Struct name: ReductionStruct
-    Original struct name: reduction_struct
-    Source: ./deps/src/kbmag-1.5.6/standalone/lib/rws.h:166-174
-=#
+# Original struct name: reduction_struct
+# Source: ./deps/src/kbmag-1.5.8/standalone/lib/rws.h:166-174
 mutable struct ReductionStruct
     rws::Ptr{RewritingSystem}
     wd_fsa::Ptr{FSA}
@@ -287,15 +242,15 @@ mutable struct ReductionStruct
     maxreducelen::Int32
     # Constructor
     ReductionStruct() = new()
-
-    function ReductionStruct(rws::RewritingSystem)
+    # Constructor
+    function ReductionStruct(rws::RewritingSystem, maxreducelen = 32767)
         return new(
             Ptr{RewritingSystem}(pointer_from_objref(rws)),
             rws.wd_fsa,
             0,
             C_NULL,
             rws.weight,
-            32767
+            maxreducelen
         )
     end
 end

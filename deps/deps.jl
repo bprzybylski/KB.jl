@@ -22,11 +22,7 @@ end
 const fsalib = joinpath(dirname(@__FILE__), "usr/lib/fsalib.$(Libdl.dlext)");   check_lib(fsalib)
 
 # executables paths
-const execs = (
-    "kbprog",
-    "wordreduce",
-)
-
-for x in execs
+for x in ("kbprog",
+          "wordreduce",)
     check_exec(joinpath(dirname(@__FILE__), "usr/bin", x))
 end

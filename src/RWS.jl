@@ -6,7 +6,7 @@ function load(filename::String,
         c_file_hdlr = Libc.FILE(file_hdlr)
 
         # Called function name: read_kbinput
-        # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsio.c:224
+        # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rwsio.c:224
         ccall((:read_kbinput, fsalib),
             Cvoid,
             (Ptr{Cvoid}, Bool, Ref{RewritingSystem}),
@@ -17,30 +17,33 @@ function load(filename::String,
 end
 
 function save(filename::String,
-    rws::RewritingSystem)
+              rws::RewritingSystem)
 
     open(filename, "w") do file_hdlr
         c_file_hdlr = Libc.FILE(file_hdlr)
 
         # Called function name: print_kboutput
-        # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsio.c:579
+        # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rwsio.c:579
         ccall((:print_kboutput, fsalib),
             Cvoid,
             (Ptr{Cvoid}, Ref{RewritingSystem}),
             c_file_hdlr, Ref(rws))
     end
+
     @info "Succesfully written file $filename"
     return nothing
 end
 
 function knuthbendix!(rws::RewritingSystem)
     @info "Running Knuth-Bendix completion"
+
     # Called function name: kbprog
-    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/kbfns.c:129
+    # Source: ./deps/src/kbmag-1.5.8/standalone/lib/kbfns.c:129
     r = return ccall((:kbprog, fsalib),
                  Cint,
                  (Ref{RewritingSystem},),
                  Ref(rws))
+
     iszero(r) || "Knuth-Bendix completion returned non-zero status: $r"
 
     return rws
@@ -53,7 +56,7 @@ function Init(rws::RewritingSystem = RewritingSystem(),
     rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
 
     # Called function name: set_defaults
-    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/kbfns.c:59
+    # Source: ./deps/src/kbmag-1.5.8/standalone/lib/kbfns.c:59
     ccall((:set_defaults, fsalib),
           Cvoid,
           (Ptr{RewritingSystem}, Bool),

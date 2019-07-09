@@ -46,11 +46,11 @@ function installkbmag(version::VersionNumber, force=false)
         unpack(sources, sources_dir, force)
     end
 
-    standalone_lib_dir = joinpath(sources_dir, "kbmag-$version", "standalone", "lib")
-    standalone_sources_dir = joinpath(sources_dir, "kbmag-$version", "standalone", "src")
-    standalone_bin_dir = joinpath(sources_dir, "kbmag-$version", "standalone", "bin");   mkpath(standalone_bin_dir)
+    standalone_lib_dir      = joinpath(sources_dir, "kbmag-$version", "standalone", "lib")
+    standalone_sources_dir  = joinpath(sources_dir, "kbmag-$version", "standalone", "src")
+    standalone_bin_dir      = joinpath(sources_dir, "kbmag-$version", "standalone", "bin");   mkpath(standalone_bin_dir)
 
-    target_lib         = joinpath(target_lib_dir, "fsalib.$(Libdl.dlext)")
+    target_lib              = joinpath(target_lib_dir, "fsalib.$(Libdl.dlext)")
 
     # static lib (step 1)
     if force || !isfile(target_lib)
