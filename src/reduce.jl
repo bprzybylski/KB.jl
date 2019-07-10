@@ -13,13 +13,6 @@ function reduce!(w::Vector{Gen}, rws::RewritingSystem)
     return w
 end
 
-function gen_names(rws::RewritingSystem)
-    # In the following, we ommit the first element of rws.eqns as it is garbage
-    # (kbmag does not use array elements indexed with zero)
-    v = [unsafe_load(rws.gen_name, i) for i in 2:rws.num_gens+1]
-    return String.(reinterpret.(UInt8, unsafe_load_ptrGen.(v)))
-end
-
 function replace_pows(s::AbstractString)
     reg = r"(\w+)\^(\d+)"
     m = match(reg, s)
