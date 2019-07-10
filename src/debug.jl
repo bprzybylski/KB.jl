@@ -39,7 +39,3 @@ function Base.show(io::IO, re::ReductionEquation)
     println(io, "ReductionEquation (in rws generators):")
     println(io, "\t$lhs  → $rhs")
 end
-
-# In the following, we ommit the first element of rws.eqns as it is garbage
-# (kbmag does not use array elements indexed with zero)
-eqns(rws::RewritingSystem) = [unsafe_load(rws.eqns, i) for i in 2:rws.num_eqns+1]
