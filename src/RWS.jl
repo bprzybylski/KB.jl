@@ -1,23 +1,64 @@
-function Load(filename::String,
+function load(filename::String,
               rws::RewritingSystem = RewritingSystem(),
-              check::Bool = false)
-    # Pointer to rws
-    rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
+              check::Bool = true)
 
-    file_hdlr = open(filename, "r")
-    c_file_hdlr = Libc.FILE(file_hdlr)
+    open(filename, "r") do file_hdlr
+        c_file_hdlr = Libc.FILE(file_hdlr)
 
-    # Called function name: read_kbinput
-    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsio.c:224
-    ccall((:read_kbinput, fsalib),
-          Cvoid,
-          (Ptr{Cvoid}, Bool, Ptr{RewritingSystem}),
-          c_file_hdlr, check, rws_ptr)
-
-    close(file_hdlr)
+        # Called function name: read_kbinput
+        # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rwsio.c:224
+        ccall((:read_kbinput, fsalib),
+            Cvoid,
+            (Ptr{Cvoid}, Bool, Ref{RewritingSystem}),
+            c_file_hdlr, check, Ref(rws))
+    end
 
     return rws
 end
+
+function save(filename::String,
+              rws::RewritingSystem)
+
+    open(filename, "w") do file_hdlr
+        c_file_hdlr = Libc.FILE(file_hdlr)
+
+        # Called function name: print_kboutput
+        # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rwsio.c:579
+        ccall((:print_kboutput, fsalib),
+            Cvoid,
+            (Ptr{Cvoid}, Ref{RewritingSystem}),
+            c_file_hdlr, Ref(rws))
+    end
+
+    @info "Succesfully written file $filename"
+    return nothing
+end
+
+function knuthbendix!(rws::RewritingSystem)
+    @info "Running Knuth-Bendix completion"
+
+    # Called function name: kbprog
+    # Source: ./deps/src/kbmag-1.5.8/standalone/lib/kbfns.c:129
+    r = return ccall((:kbprog, fsalib),
+                 Cint,
+                 (Ref{RewritingSystem},),
+                 Ref(rws))
+
+    iszero(r) || "Knuth-Bendix completion returned non-zero status: $r"
+
+    return rws
+end
+
+function gen_names(rws::RewritingSystem)
+    # In the following, we ommit the first element of rws.eqns as it is garbage
+    # (kbmag does not use array elements indexed with zero)
+    v = [unsafe_load(rws.gen_name, i) for i in 2:rws.num_gens+1]
+    return String.(reinterpret.(UInt8, unsafe_load_ptrGen.(v)))
+end
+
+# In the following, we ommit the first element of rws.eqns as it is garbage
+# (kbmag does not use array elements indexed with zero)
+eqns(rws::RewritingSystem) = [unsafe_load(rws.eqns, i) for i in 2:rws.num_eqns+1]
 
 function Init(rws::RewritingSystem = RewritingSystem(),
               cosets::Bool = false)
@@ -26,7 +67,7 @@ function Init(rws::RewritingSystem = RewritingSystem(),
     rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
 
     # Called function name: set_defaults
-    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/kbfns.c:59
+    # Source: ./deps/src/kbmag-1.5.8/standalone/lib/kbfns.c:59
     ccall((:set_defaults, fsalib),
           Cvoid,
           (Ptr{RewritingSystem}, Bool),
@@ -62,32 +103,4 @@ function Init(rws::RewritingSystem = RewritingSystem(),
         #rws.subwordsG = C_NULL
 
     return rws
-end
-
-function Prog(rws::RewritingSystem)::Int
-    # Called function name: kbprog
-    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/kbfns.c:129
-    return ccall((:kbprog, fsalib),
-                 Cint,
-                 (Ptr{RewritingSystem},),
-                 Ref(rws))
-end
-
-function Reduce(w::String,
-                rws::RewritingSystem)::Int
-
-    rs = ReductionStruct()
-    rs.rws = Ptr{RewritingSystem}(pointer_from_objref(rws))
-    rs.wd_fsa = rws.wd_fsa
-    separator = rws.num_gens
-    wa = C_NULL
-    weight = rws.weight
-    maxreducelen = Int32(32767)
-
-    # Called function name: rws_reduce
-    # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsreduce.c:27
-    return ccall((:rws_reduce, fsalib),
-                 Cint,
-                 (Ptr{Gen}, Ptr{ReductionStruct}),
-                 pointer(w), Ref(rs))
 end
