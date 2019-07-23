@@ -48,3 +48,6 @@ let w = "b*b"
     @show w
     @show KBmag.reduce(w, rws)
 end
+
+KBmag.low_level_exec_wrapper("kbprog"; params = ("3a6",), force_dir = "/Users/Bartek/Documents/Repos/KBmag.jl/deps/src/kbmag-1.5.8/standalone/kb_data/")
+KBmag.low_level_exec_wrapper("wordreduce"; params = ("-kbprog", "3a6"), force_dir = "/Users/Bartek/Documents/Repos/KBmag.jl/deps/src/kbmag-1.5.8/standalone/kb_data/", input = "a^3,a^4;")

@@ -76,3 +76,44 @@ function low_level_exec(cmd::Cmd; input::String = "", tempfile = false)
     )
   end
 end
+
+function low_level_exec_wrapper(program::String; params = (), input::String = "", force_dir = ".")
+  call_dir = pwd()
+  bin_dir = joinpath(dirname(@__FILE__), "..", "deps", "usr", "bin", "")
+
+  if force_dir != "."
+    cd(force_dir)
+  end
+
+  result = low_level_exec(`$bin_dir$program $(params)`; input = input)
+
+  if force_dir != "."
+    cd(call_dir)
+  end
+
+  return result
+end
+
+function kbprog_wrapper(groupname::String;
+                        dir = joinpath(dirname(@__FILE__), "..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data"))
+  return low_level_exec_wrapper("kbprog"; params = (groupname, ), force_dir = dir)
+end
+
+function wordreduce_wrapper(groupname::String,
+                            words;
+                            dir = joinpath(dirname(@__FILE__), "..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data"))
+
+  raw_input = join(words, ",") * ";"
+  res = low_level_exec_wrapper("wordreduce"; params = ("-kbprog", groupname), input = raw_input, force_dir = dir)
+  output = []
+
+  for i in eachmatch(r"([^ ]*[^.:])\n", res.out)
+    if i.captures[1] == "IdWord"
+      push!(output, "")
+    else
+      push!(output, i.captures[1])
+    end
+  end
+
+  return output
+end
