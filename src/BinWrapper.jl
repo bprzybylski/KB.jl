@@ -1,3 +1,11 @@
+kbmag_bin_dir   = joinpath(dirname(@__FILE__), "..", "deps", "usr", "bin", "")
+kbmag_data_dir  = joinpath(dirname(@__FILE__), "..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data")
+
+# This function executes a given command (including call parameters)
+# with a given input, based on an in-memory (tempfile = false)
+# or in-file (tempfile = true) implementation.
+# It returns a tuple of stdout (as String), stderr (as String) and exit code (as Integer)
+# WARNING: Input string should not be terminated.
 function low_level_exec(cmd::Cmd; input::String = "", tempfile = false)
   # tempfile-based implementation
   if tempfile
@@ -77,43 +85,77 @@ function low_level_exec(cmd::Cmd; input::String = "", tempfile = false)
   end
 end
 
-function low_level_exec_wrapper(program::String; params = (), input::String = "", force_dir = ".")
+# This function wraps the binaries that come with the original kbmag library.
+# Here, all the parameters are passed as Strings
+function kbmag_bin_wrapper(program::String; params = (), input::String = "", force_dir::String = ".")
+  # remember the current working directory
   call_dir = pwd()
-  bin_dir = joinpath(dirname(@__FILE__), "..", "deps", "usr", "bin", "")
 
+  # change the directory if necessary
+  # WARNING: when calling a kbmag binary we need to make sure that
+  # all the input files are in the current working directory
   if force_dir != "."
     cd(force_dir)
   end
 
-  result = low_level_exec(`$bin_dir$program $(params)`; input = input)
+  result = low_level_exec(`$kbmag_bin_dir$program $(params)`; input = input)
 
+  # change the current working directory back to the previous one
   if force_dir != "."
     cd(call_dir)
   end
 
-  return result
+  return result # (out, err, ret)
 end
 
-function kbprog_wrapper(groupname::String;
-                        dir = joinpath(dirname(@__FILE__), "..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data"))
-  return low_level_exec_wrapper("kbprog"; params = (groupname, ), force_dir = dir)
+# This function wraps a kbprog binary
+#     groupname::String   --- input file name
+#     dir::String         --- working directory
+function kbprog_call(groupname::String;
+                     dir::String = kbmag_data_dir)
+
+  res = kbmag_bin_wrapper("kbprog"; params = (groupname, ), force_dir = dir)
+
+  # assure that the call was successful
+  res.ret == 0 || error(res.err)
+
+  # return the whole result
+  return res
 end
 
-function wordreduce_wrapper(groupname::String,
-                            words;
-                            dir = joinpath(dirname(@__FILE__), "..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data"))
+# This function wraps a kbprog binary
+#     groupname::String   --- input files basename
+#     words               --- a tuple of input strings
+#     dir::String         --- working directory
+function wordreduce_call(groupname::String,
+                         words;
+                         dir = kbmag_data_dir)
 
-  raw_input = join(words, ",") * ";"
-  res = low_level_exec_wrapper("wordreduce"; params = ("-kbprog", groupname), input = raw_input, force_dir = dir)
-  output = []
+  # check whether input files exist and if not, call kbprog
+  if !isfile(joinpath(dir, groupname * ".kbprog")) ||
+     !isfile(joinpath(dir, groupname * ".kbprog.ec")) ||
+     !isfile(joinpath(dir, groupname * ".reduce"))
 
-  for i in eachmatch(r"([^ ]*[^.:])\n", res.out)
-    if i.captures[1] == "IdWord"
-      push!(output, "")
-    else
-      push!(output, i.captures[1])
-    end
+    kbprog_res = kbprog_call(groupname; dir = dir)
+    # assure that the call was successful
+    kbprog_res.ret == 0 || error(kbprog_res.err)
   end
 
+  # prepare a raw input for the wordreduce binary
+  raw_input = join(words, ",") * ";"
+  # call the wordreduce binary
+  res = kbmag_bin_wrapper("wordreduce"; params = ("-kbprog", groupname), input = raw_input, force_dir = dir)
+  # assure that the call was successful
+  res.ret == 0 || error(res.err)
+
+  # prepare an array for the reduced strings...
+  output = []
+  # ...and fill it with the words extracted from the output of the wordreduce call
+  # WARNING: "IdWord" constant is replaced by an empty string for further concat
+  for i in eachmatch(r"([^ ]*[^.:])\n", res.out)
+    push!(output, i.captures[1] == "IdWord" ? "" : i.captures[1])
+  end
+
+  # return the array
   return output
 end
