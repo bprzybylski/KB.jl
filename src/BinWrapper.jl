@@ -134,11 +134,14 @@ function wordreduce_call(groupname::String,
                          words::Array{String,1};
                          execution_dir = ".")
 
-  # check whether input files exist and if not, call kbprog
-  if !isfile(joinpath(execution_dir, groupname * ".kbprog")) ||
-     !isfile(joinpath(execution_dir, groupname * ".kbprog.ec")) ||
-     !isfile(joinpath(execution_dir, groupname * ".reduce"))
+  kbprog_output_files = [
+    joinpath(execution_dir, groupname * ".kbprog"),
+    joinpath(execution_dir, groupname * ".kbprog.ec"),
+    joinpath(execution_dir, groupname * ".reduce")
+  ]
 
+  # check whether input files exist and if not, call kbprog
+  if !all(isfile.(kbprog_output_files))
     kbprog_res = kbprog_call(groupname; execution_dir = execution_dir)
     # assure that the call was successful
     kbprog_res.ret == 0 || error(kbprog_res.err)
