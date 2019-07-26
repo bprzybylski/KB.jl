@@ -85,7 +85,7 @@ using KBmag
         @test res == ["A^3", "A^3", "B", "c", ""]
 
         # remove kbprog output files
-        for ext in [ ".kbprog", ".kbprog.ec", ".kbprog.reduce" ]
+        for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
             s = joinpath(kb_data_dir, groupname * ext)
             isfile(s) && rm(s)
         end
@@ -102,7 +102,7 @@ using KBmag
         @test res == ["A^3", "A^3", "B", "c", ""]
 
         # remove kbprog output files
-        for ext in [ ".kbprog", ".kbprog.ec", ".kbprog.reduce" ]
+        for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
             s = joinpath(kb_data_dir, groupname * ext)
             isfile(s) && rm(s)
         end
