@@ -87,7 +87,7 @@ end
 
 # This function wraps the binaries that come with the original kbmag library.
 # Here, all the parameters are passed as Strings
-function kbmag_bin_wrapper(program::String; params = (), input::String = "", execution_dir::String = ".")
+function kbmag_bin_wrapper(program::String; params::Array{String,1} = [], input::String = "", execution_dir::String = ".")
   # remember the current working directory
   call_dir = pwd()
 
@@ -115,7 +115,7 @@ end
 function kbprog_call(groupname::String;
                      execution_dir::String = kbmag_data_dir)
 
-  res = kbmag_bin_wrapper("kbprog"; params = (groupname, ), execution_dir = execution_dir)
+  res = kbmag_bin_wrapper("kbprog"; params = [groupname], execution_dir = execution_dir)
 
   # assure that the call was successful
   res.ret == 0 || error(res.err)
@@ -129,7 +129,7 @@ end
 #     words               --- a tuple of input strings
 #     dir::String         --- working directory
 function wordreduce_call(groupname::String,
-                         words;
+                         words::Array{String,1};
                          execution_dir = kbmag_data_dir)
 
   # check whether input files exist and if not, call kbprog
@@ -145,7 +145,7 @@ function wordreduce_call(groupname::String,
   # prepare a raw input for the wordreduce binary
   raw_input = join(words, ",") * ";"
   # call the wordreduce binary
-  res = kbmag_bin_wrapper("wordreduce"; params = ("-kbprog", groupname), input = raw_input, execution_dir = execution_dir)
+  res = kbmag_bin_wrapper("wordreduce"; params = ["-kbprog", groupname], input = raw_input, execution_dir = execution_dir)
   # assure that the call was successful
   res.ret == 0 || error(res.err)
 

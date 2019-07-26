@@ -75,12 +75,12 @@ using KBmag
         end
 
         # call the wordreduce bin (single input string)
-        res = KBmag.wordreduce_call(groupname, ("a*a*a*a", ))
+        res = KBmag.wordreduce_call(groupname, ["a*a*a*a"])
         @test length(res) == 1
         @test res[1] == "A^3"
 
         # call the wordreduce bin (all the quations plus one IdWord)
-        res = KBmag.wordreduce_call(groupname, ("a*a*a*a", "a^4", "b*b", "B*A", "a*A" ))
+        res = KBmag.wordreduce_call(groupname, ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"])
         @test length(res) == 5
         @test res == ["A^3", "A^3", "B", "c", ""]
 
@@ -92,12 +92,12 @@ using KBmag
 
         # what if the kbprog function was *not* called in advance?
         # call the wordreduce bin (single input string)
-        res = KBmag.wordreduce_call(groupname, ("a*a*a*a", ))
+        res = KBmag.wordreduce_call(groupname, ["a*a*a*a"])
         @test length(res) == 1
         @test res[1] == "A^3"
 
         # call the wordreduce bin (all the quations plus one IdWord)
-        res = KBmag.wordreduce_call(groupname, ("a*a*a*a", "a^4", "b*b", "B*A", "a*A" ))
+        res = KBmag.wordreduce_call(groupname, ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"])
         @test length(res) == 5
         @test res == ["A^3", "A^3", "B", "c", ""]
 
