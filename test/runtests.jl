@@ -8,10 +8,10 @@ using KBmag
 
     @test KBmag.RewritingSystem() isa KBmag.RewritingSystem
 
-    kb_data_dir = joinpath("..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data")
+    kbmag_data_dir = joinpath("..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data")
 
     @testset "237" begin
-        fname = joinpath(kb_data_dir, "237")
+        fname = joinpath(kbmag_data_dir, "237")
         #=_RWS := rec(
             isRWS := true,
             ordering := "shortlex",
@@ -62,48 +62,48 @@ using KBmag
 
         # remove kbprog output files
         for ext in [ ".kbprog", ".kbprog.ec", ".kbprog.reduce" ]
-            s = joinpath(kb_data_dir, groupname * ext)
+            s = joinpath(kbmag_data_dir, groupname * ext)
             isfile(s) && rm(s)
         end
 
         # call the kbprog binary
-        r = KBmag.kbprog_call(groupname)
+        r = KBmag.kbprog_call(groupname; execution_dir = kbmag_data_dir)
         # check whether output files exist
         for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
-            s = joinpath(kb_data_dir, groupname * ext)
+            s = joinpath(kbmag_data_dir, groupname * ext)
             @test isfile(s)
         end
 
         # call the wordreduce bin (single input string)
-        res = KBmag.wordreduce_call(groupname, ["a*a*a*a"])
+        res = KBmag.wordreduce_call(groupname, ["a*a*a*a"]; execution_dir = kbmag_data_dir)
         @test length(res) == 1
         @test res[1] == "A^3"
 
         # call the wordreduce bin (all the quations plus one IdWord)
-        res = KBmag.wordreduce_call(groupname, ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"])
+        res = KBmag.wordreduce_call(groupname, ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"]; execution_dir = kbmag_data_dir)
         @test length(res) == 5
         @test res == ["A^3", "A^3", "B", "c", ""]
 
         # remove kbprog output files
         for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
-            s = joinpath(kb_data_dir, groupname * ext)
+            s = joinpath(kbmag_data_dir, groupname * ext)
             isfile(s) && rm(s)
         end
 
         # what if the kbprog function was *not* called in advance?
         # call the wordreduce bin (single input string)
-        res = KBmag.wordreduce_call(groupname, ["a*a*a*a"])
+        res = KBmag.wordreduce_call(groupname, ["a*a*a*a"]; execution_dir = kbmag_data_dir)
         @test length(res) == 1
         @test res[1] == "A^3"
 
         # call the wordreduce bin (all the quations plus one IdWord)
-        res = KBmag.wordreduce_call(groupname, ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"])
+        res = KBmag.wordreduce_call(groupname, ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"]; execution_dir = kbmag_data_dir)
         @test length(res) == 5
         @test res == ["A^3", "A^3", "B", "c", ""]
 
         # remove kbprog output files
         for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
-            s = joinpath(kb_data_dir, groupname * ext)
+            s = joinpath(kbmag_data_dir, groupname * ext)
             isfile(s) && rm(s)
         end
     end

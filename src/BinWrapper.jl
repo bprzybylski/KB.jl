@@ -1,5 +1,4 @@
-kbmag_bin_dir   = joinpath(dirname(@__FILE__), "..", "deps", "usr", "bin", "")
-kbmag_data_dir  = joinpath(dirname(@__FILE__), "..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data")
+const kbmag_bin_dir   = joinpath(dirname(@__FILE__), "..", "deps", "usr", "bin")
 
 # This function executes a given command (including call parameters)
 # with a given input, based on an in-memory (tempfile = false)
@@ -87,7 +86,10 @@ end
 
 # This function wraps the binaries that come with the original kbmag library.
 # Here, all the parameters are passed as Strings
-function kbmag_bin_wrapper(program::String; params::Array{String,1} = [], input::String = "", execution_dir::String = ".")
+function kbmag_bin_wrapper(program::String;
+                           params::Array{String,1} = [],
+                           input::String = "",
+                           execution_dir::String = ".")
   # remember the current working directory
   call_dir = pwd()
 
@@ -113,7 +115,7 @@ end
 #     groupname::String   --- input file name
 #     dir::String         --- working directory
 function kbprog_call(groupname::String;
-                     execution_dir::String = kbmag_data_dir)
+                     execution_dir::String = ".")
 
   res = kbmag_bin_wrapper("kbprog"; params = [groupname], execution_dir = execution_dir)
 
@@ -130,7 +132,7 @@ end
 #     dir::String         --- working directory
 function wordreduce_call(groupname::String,
                          words::Array{String,1};
-                         execution_dir = kbmag_data_dir)
+                         execution_dir = ".")
 
   # check whether input files exist and if not, call kbprog
   if !isfile(joinpath(execution_dir, groupname * ".kbprog")) ||
