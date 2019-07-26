@@ -46,4 +46,48 @@ using KBmag
             @test iszero(KBmag.reduce!(v, rws)[1])
         end
     end
+
+    # WARNING: This testset covers default data directories only!
+    @testset "237-bin" begin
+        groupname = "237"
+        #=_RWS := rec(
+            isRWS := true,
+            ordering := "shortlex",
+            tidyint := 20,
+            generatorOrder := [a,A,b,B,c],
+            inverses := [A,a,B,b,c],
+            equations := [
+            [a*a*a*a,A*A*A], [b*b,B], [B*A,c]
+        ]);=#
+
+        # remove kbprog output files
+        for ext in [ ".kbprog", ".kbprog.ec", ".kbprog.reduce" ]
+            s = joinpath(kb_data_dir, groupname * ext)
+            isfile(s) && rm(s)
+        end
+
+        # call the kbprog binary
+        r = KBmag.kbprog_call(groupname)
+        # check whether output files exist
+        for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
+            s = joinpath(kb_data_dir, groupname * ext)
+            @test isfile(s)
+        end
+
+        # call the wordreduce bin (single input string)
+        res = KBmag.wordreduce_call(groupname, ("a*a*a*a", ))
+        @test length(res) == 1
+        @test res[1] == "A^3"
+
+        # call the wordreduce bin (all the quations plus one IdWord)
+        res = KBmag.wordreduce_call(groupname, ("a*a*a*a", "a^4", "b*b", "B*A", "a*A" ))
+        @test length(res) == 5
+        @test res == ["A^3", "A^3", "B", "c", ""]
+
+        # remove kbprog output files
+        for ext in [ ".kbprog", ".kbprog.ec", ".kbprog.reduce" ]
+            s = joinpath(kb_data_dir, groupname * ext)
+            isfile(s) && rm(s)
+        end
+    end
 end
