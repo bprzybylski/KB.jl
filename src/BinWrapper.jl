@@ -87,21 +87,22 @@ end
 
 # This function wraps the binaries that come with the original kbmag library.
 # Here, all the parameters are passed as Strings
-function kbmag_bin_wrapper(program::String; params = (), input::String = "", force_dir::String = ".")
+function kbmag_bin_wrapper(program::String; params = (), input::String = "", execution_dir::String = ".")
   # remember the current working directory
   call_dir = pwd()
 
   # change the directory if necessary
   # WARNING: when calling a kbmag binary we need to make sure that
   # all the input files are in the current working directory
-  if force_dir != "."
-    cd(force_dir)
+  if execution_dir != "."
+    cd(execution_dir)
   end
 
-  result = low_level_exec(`$kbmag_bin_dir$program $(params)`; input = input)
+  call_path = joinpath(kbmag_bin_dir, program)
+  result = low_level_exec(`$call_path $(params)`; input = input)
 
   # change the current working directory back to the previous one
-  if force_dir != "."
+  if execution_dir != "."
     cd(call_dir)
   end
 
@@ -112,9 +113,9 @@ end
 #     groupname::String   --- input file name
 #     dir::String         --- working directory
 function kbprog_call(groupname::String;
-                     dir::String = kbmag_data_dir)
+                     execution_dir::String = kbmag_data_dir)
 
-  res = kbmag_bin_wrapper("kbprog"; params = (groupname, ), force_dir = dir)
+  res = kbmag_bin_wrapper("kbprog"; params = (groupname, ), execution_dir = execution_dir)
 
   # assure that the call was successful
   res.ret == 0 || error(res.err)
@@ -129,14 +130,14 @@ end
 #     dir::String         --- working directory
 function wordreduce_call(groupname::String,
                          words;
-                         dir = kbmag_data_dir)
+                         execution_dir = kbmag_data_dir)
 
   # check whether input files exist and if not, call kbprog
-  if !isfile(joinpath(dir, groupname * ".kbprog")) ||
-     !isfile(joinpath(dir, groupname * ".kbprog.ec")) ||
-     !isfile(joinpath(dir, groupname * ".reduce"))
+  if !isfile(joinpath(execution_dir, groupname * ".kbprog")) ||
+     !isfile(joinpath(execution_dir, groupname * ".kbprog.ec")) ||
+     !isfile(joinpath(execution_dir, groupname * ".reduce"))
 
-    kbprog_res = kbprog_call(groupname; dir = dir)
+    kbprog_res = kbprog_call(groupname; execution_dir = execution_dir)
     # assure that the call was successful
     kbprog_res.ret == 0 || error(kbprog_res.err)
   end
@@ -144,7 +145,7 @@ function wordreduce_call(groupname::String,
   # prepare a raw input for the wordreduce binary
   raw_input = join(words, ",") * ";"
   # call the wordreduce binary
-  res = kbmag_bin_wrapper("wordreduce"; params = ("-kbprog", groupname), input = raw_input, force_dir = dir)
+  res = kbmag_bin_wrapper("wordreduce"; params = ("-kbprog", groupname), input = raw_input, execution_dir = execution_dir)
   # assure that the call was successful
   res.ret == 0 || error(res.err)
 
