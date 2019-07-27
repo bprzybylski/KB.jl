@@ -90,22 +90,28 @@ function kbmag_bin_wrapper(program::String;
                            params::Array{String,1} = [],
                            input::String = "",
                            execution_dir::String = ".")
+
   # remember the current working directory
   call_dir = pwd()
+  result = ()
 
-  # change the directory if necessary
-  # WARNING: when calling a kbmag binary we need to make sure that
-  # all the input files are in the current working directory
-  if execution_dir != "."
-    cd(execution_dir)
-  end
+  try
+    # change the directory if necessary
+    # WARNING: when calling a kbmag binary we need to make sure that
+    # all the input files are in the current working directory
+    if execution_dir != "."
+      cd(execution_dir)
+    end
 
-  call_path = joinpath(kbmag_bin_dir, program)
-  result = low_level_exec(`$call_path $(params)`; input = input)
-
-  # change the current working directory back to the previous one
-  if execution_dir != "."
-    cd(call_dir)
+    call_path = joinpath(kbmag_bin_dir, program)
+    result = low_level_exec(`$call_path $(params)`; input = input)
+  catch x
+    error("Exception handled: ", x)
+  finally
+    # change the current working directory back to the previous one
+    if execution_dir != "."
+      cd(call_dir)
+    end
   end
 
   return result # (out, err, ret)
