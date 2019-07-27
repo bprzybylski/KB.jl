@@ -101,10 +101,20 @@ using KBmag
         @test length(res) == 5
         @test res == ["A^3", "A^3", "B", "c", ""]
 
+        # non-proper wordreduceinput
+        @test_throws ErrorException("#Input error: invalid entry in word.\n") KBmag.wordreduce_call(groupname, ["nonproperinput"]; execution_dir = kbmag_data_dir)
+
         # remove kbprog output files
         for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
             s = joinpath(kbmag_data_dir, groupname * ext)
             isfile(s) && rm(s)
+        end
+
+        # test error-handling
+        if !isfile(joinpath(kbmag_data_dir, "nonexistingfile"))
+            @test_throws ErrorException("Error: cannot open file nonexistingfile\n") KBmag.kbprog_call("nonexistingfile"; execution_dir = kbmag_data_dir)
+            # in the following test, there are no kbprog files so the error should be thrown by kbprog
+            @test_throws ErrorException("Error: cannot open file nonexistingfile\n") KBmag.wordreduce_call("nonexistingfile", [""]; execution_dir = kbmag_data_dir)
         end
     end
 end
