@@ -1,4 +1,4 @@
-const kbmag_bin_dir   = joinpath(dirname(@__FILE__), "..", "deps", "usr", "bin")
+const kbmag_bin_dir = joinpath(dirname(@__FILE__), "..", "deps", "usr", "bin")
 
 # This function executes a given command (including call parameters)
 # with a given input, based on an in-memory (tempfile = false)
@@ -96,12 +96,9 @@ function kbmag_bin_wrapper(program::String;
   result = ()
 
   try
-    # change the directory if necessary
     # WARNING: when calling a kbmag binary we need to make sure that
     # all the input files are in the current working directory
-    if execution_dir != "."
-      cd(execution_dir)
-    end
+    cd(execution_dir)
 
     call_path = joinpath(kbmag_bin_dir, program)
     result = low_level_exec(`$call_path $(params)`; input = input)
@@ -109,9 +106,7 @@ function kbmag_bin_wrapper(program::String;
     error("Exception handled: ", x)
   finally
     # change the current working directory back to the previous one
-    if execution_dir != "."
-      cd(call_dir)
-    end
+    cd(call_dir)
   end
 
   return result # (out, err, ret)
