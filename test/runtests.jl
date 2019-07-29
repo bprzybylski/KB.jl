@@ -8,10 +8,10 @@ using KBmag
 
     @test KBmag.RewritingSystem() isa KBmag.RewritingSystem
 
-    kb_data_dir = joinpath("..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data")
+    kbmag_data_dir = joinpath("..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data")
 
     @testset "237" begin
-        fname = joinpath(kb_data_dir, "237")
+        fname = joinpath(kbmag_data_dir, "237")
         #=_RWS := rec(
             isRWS := true,
             ordering := "shortlex",
@@ -44,6 +44,83 @@ using KBmag
         for w in [c*c, b*b*b, a*a*a*a*a*a*a, B*A*c]
             v = Int8.(Vector{UInt8}(w))
             @test iszero(KBmag.reduce!(v, rws)[1])
+        end
+    end
+
+    # WARNING: This testset covers default data directories only!
+    @testset "237-bin" begin
+        groupname = "237"
+        #=_RWS := rec(
+            isRWS := true,
+            ordering := "shortlex",
+            tidyint := 20,
+            generatorOrder := [a,A,b,B,c],
+            inverses := [A,a,B,b,c],
+            equations := [
+            [a*a*a*a,A*A*A], [b*b,B], [B*A,c]
+        ]);=#
+
+        # remove kbprog output files
+        for ext in [ ".kbprog", ".kbprog.ec", ".kbprog.reduce" ]
+            s = joinpath(kbmag_data_dir, groupname * ext)
+            isfile(s) && rm(s)
+        end
+
+        # call the kbprog binary
+        r = KBmag.kbprog_call(joinpath(kbmag_data_dir, groupname))
+        # check whether output files exist
+        for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
+            s = joinpath(kbmag_data_dir, groupname * ext)
+            @test isfile(s)
+        end
+
+        # call the wordreduce bin (single input string)
+        res = KBmag.wordreduce_call(joinpath(kbmag_data_dir, groupname), ["a*a*a*a"])
+        @test length(res) == 1
+        @test res[1] == "A^3"
+
+        # call the wordreduce bin (all the quations plus one IdWord)
+        res = KBmag.wordreduce_call(joinpath(kbmag_data_dir, groupname),
+                                    ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"])
+        @test length(res) == 5
+        @test res == ["A^3", "A^3", "B", "c", ""]
+
+        # remove kbprog output files
+        for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
+            s = joinpath(kbmag_data_dir, groupname * ext)
+            isfile(s) && rm(s)
+        end
+
+        # what if the kbprog function was *not* called in advance?
+        # call the wordreduce bin (single input string)
+        res = KBmag.wordreduce_call(joinpath(kbmag_data_dir, groupname), ["a*a*a*a"])
+        @test length(res) == 1
+        @test res[1] == "A^3"
+
+        # call the wordreduce bin (all the quations plus one IdWord)
+        res = KBmag.wordreduce_call(joinpath(kbmag_data_dir, groupname),
+                                    ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"])
+        @test length(res) == 5
+        @test res == ["A^3", "A^3", "B", "c", ""]
+
+        # non-proper wordreduceinput
+        @test_throws ErrorException("#Input error: invalid entry in word.\n") KBmag.wordreduce_call(
+                                    joinpath(kbmag_data_dir, groupname),
+                                    ["nonproperinput"])
+
+        # remove kbprog output files
+        for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
+            s = joinpath(kbmag_data_dir, groupname * ext)
+            isfile(s) && rm(s)
+        end
+
+        # test error-handling
+        fpath = joinpath(kbmag_data_dir, "nonexistingfile")
+        if !isfile(fpath)
+            absfpath = abspath(fpath)
+            @test_throws ErrorException("The $absfpath file could not be found.") KBmag.kbprog_call(fpath)
+            # in the following test, there are no kbprog files so the error should be thrown by kbprog
+            @test_throws ErrorException("The $absfpath file could not be found.") KBmag.wordreduce_call(fpath, [""])
         end
     end
 end
