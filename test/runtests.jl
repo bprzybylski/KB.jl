@@ -67,7 +67,7 @@ using KBmag
         end
 
         # call the kbprog binary
-        r = KBmag.kbprog_call(groupname; execution_dir = kbmag_data_dir)
+        r = KBmag.kbprog_call(joinpath(kbmag_data_dir, groupname))
         # check whether output files exist
         for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
             s = joinpath(kbmag_data_dir, groupname * ext)
@@ -75,12 +75,13 @@ using KBmag
         end
 
         # call the wordreduce bin (single input string)
-        res = KBmag.wordreduce_call(groupname, ["a*a*a*a"]; execution_dir = kbmag_data_dir)
+        res = KBmag.wordreduce_call(joinpath(kbmag_data_dir, groupname), ["a*a*a*a"])
         @test length(res) == 1
         @test res[1] == "A^3"
 
         # call the wordreduce bin (all the quations plus one IdWord)
-        res = KBmag.wordreduce_call(groupname, ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"]; execution_dir = kbmag_data_dir)
+        res = KBmag.wordreduce_call(joinpath(kbmag_data_dir, groupname),
+                                    ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"])
         @test length(res) == 5
         @test res == ["A^3", "A^3", "B", "c", ""]
 
@@ -92,17 +93,20 @@ using KBmag
 
         # what if the kbprog function was *not* called in advance?
         # call the wordreduce bin (single input string)
-        res = KBmag.wordreduce_call(groupname, ["a*a*a*a"]; execution_dir = kbmag_data_dir)
+        res = KBmag.wordreduce_call(joinpath(kbmag_data_dir, groupname), ["a*a*a*a"])
         @test length(res) == 1
         @test res[1] == "A^3"
 
         # call the wordreduce bin (all the quations plus one IdWord)
-        res = KBmag.wordreduce_call(groupname, ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"]; execution_dir = kbmag_data_dir)
+        res = KBmag.wordreduce_call(joinpath(kbmag_data_dir, groupname),
+                                    ["a*a*a*a", "a^4", "b*b", "B*A", "a*A"])
         @test length(res) == 5
         @test res == ["A^3", "A^3", "B", "c", ""]
 
         # non-proper wordreduceinput
-        @test_throws ErrorException("#Input error: invalid entry in word.\n") KBmag.wordreduce_call(groupname, ["nonproperinput"]; execution_dir = kbmag_data_dir)
+        @test_throws ErrorException("#Input error: invalid entry in word.\n") KBmag.wordreduce_call(
+                                    joinpath(kbmag_data_dir, groupname),
+                                    ["nonproperinput"])
 
         # remove kbprog output files
         for ext in [ ".kbprog", ".kbprog.ec", ".reduce" ]
@@ -111,10 +115,12 @@ using KBmag
         end
 
         # test error-handling
-        if !isfile(joinpath(kbmag_data_dir, "nonexistingfile"))
-            @test_throws ErrorException("Error: cannot open file nonexistingfile\n") KBmag.kbprog_call("nonexistingfile"; execution_dir = kbmag_data_dir)
+        fpath = joinpath(kbmag_data_dir, "nonexistingfile")
+        if !isfile(fpath)
+            absfpath = abspath(fpath)
+            @test_throws ErrorException("The $absfpath file could not be found.") KBmag.kbprog_call(fpath)
             # in the following test, there are no kbprog files so the error should be thrown by kbprog
-            @test_throws ErrorException("Error: cannot open file nonexistingfile\n") KBmag.wordreduce_call("nonexistingfile", [""]; execution_dir = kbmag_data_dir)
+            @test_throws ErrorException("The $absfpath file could not be found.") KBmag.wordreduce_call(fpath, [""])
         end
     end
 end
