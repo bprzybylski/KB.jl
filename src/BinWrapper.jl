@@ -11,6 +11,9 @@ The memory-based implementation uses `IOBuffer` (VERSION >= 1.1) or `Pipes` (VER
 ```julia-repl
 julia> KBmag.low_level_exec(`cat`; input = "abc")
 abc
+```
+
+```julia-repl
 julia> KBmag.low_level_exec(`echo abc`)
 abc
 ```
