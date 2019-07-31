@@ -1,3 +1,9 @@
+"""
+    reduce!(w::Vector{Gen},
+            rws::RewritingSystem)
+
+Reduces `w` in-place based on `rws`. Here, `w` is a vector of indices that correspond to proper generators in `rws`.
+"""
 function reduce!(w::Vector{Gen}, rws::RewritingSystem)
     rs = ReductionStruct(rws)
 
@@ -13,6 +19,26 @@ function reduce!(w::Vector{Gen}, rws::RewritingSystem)
     return w
 end
 
+"""
+    replace_pows(s::AbstractString)
+
+For a given string `s` in a form of `·^n` returns an array of `n` copies of `·`.
+
+# Examples
+```julia-repl
+julia> KBmag.replace_pows("xyz^3")
+3-element Array{SubString{String},1}:
+ "xyz"
+ "xyz"
+ "xyz"
+```
+
+```julia-repl
+julia> KBmag.replace_pows("xyz")
+1-element Array{String,1}:
+ "xyz"
+```
+"""
 function replace_pows(s::AbstractString)
     reg = r"(\w+)\^(\d+)"
     m = match(reg, s)
@@ -24,12 +50,35 @@ function replace_pows(s::AbstractString)
     return [letter for _ in 1:pow]
 end
 
+"""
+    break_into_letters(w::AbstractString)
+
+Converts a string `w` in a form of a product of powers into an array of proper factors.
+
+# Examples
+```julia-repl
+julia> KBmag.break_into_letters("xyz^3*u*w^2")
+6-element Array{SubString{String},1}:
+ "xyz"
+ "xyz"
+ "xyz"
+ "u"
+ "w"
+ "w"
+```
+"""
 function break_into_letters(w::AbstractString)
     syllables = split(w, "*")
     letters = vcat(replace_pows.(syllables)...)
     return letters
 end
 
+"""
+    reduce(w::String,
+           rws::RewritingSystem)
+
+Reduces `w` based on `rws`. Here, `w` is a string in a form of a product of powers of generators. The function returns a string that represents a reduced word.
+"""
 function reduce(w::String, rws::RewritingSystem)
     gensn = gen_names(rws)
     gensd = Dict(name=>Gen(i) for (i, name) in enumerate(gensn))

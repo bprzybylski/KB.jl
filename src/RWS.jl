@@ -1,3 +1,10 @@
+"""
+    load(filename::String,
+         rws::RewritingSystem = RewritingSystem(),
+         check::Bool = true)
+
+Reads an RWS description from a file determined by the `filename` parameter. Returns a `RewritingSystem` structure that reflects the input file. If the `rws` parameter points to an existing structure, the file will be loaded into that structure. The `check` parameter determines whether words in equations should be additionally checked.
+"""
 function load(filename::String,
               rws::RewritingSystem = RewritingSystem(),
               check::Bool = true)
@@ -16,6 +23,12 @@ function load(filename::String,
     return rws
 end
 
+"""
+    save(filename::String,
+         rws::RewritingSystem)
+
+Saves the RWS described by the `rws` parameter into a file determines by the `filename` parameter.
+"""
 function save(filename::String,
               rws::RewritingSystem)
 
@@ -34,6 +47,11 @@ function save(filename::String,
     return nothing
 end
 
+"""
+    knuthbendix!(rws::RewritingSystem)
+
+Runs a Knuth-Bendix completion on a given `RewritingSystem` structure determined by the `rws` parameter.
+"""
 function knuthbendix!(rws::RewritingSystem)
     @info "Running Knuth-Bendix completion"
 
@@ -60,6 +78,12 @@ end
 # (kbmag does not use array elements indexed with zero)
 eqns(rws::RewritingSystem) = [unsafe_load(rws.eqns, i) for i in 2:rws.num_eqns+1]
 
+"""
+    Init(rws::RewritingSystem = RewritingSystem(),
+         cosets::Bool = false)
+
+Generates and returns a new `RewritingSystem` structure that has its fields set up. If the `rws` parameter points to an existing structure, the setup will be performed on this structure. The `cosets` parameter determines the initial value of the `cosets` field of the returned structure.
+"""
 function Init(rws::RewritingSystem = RewritingSystem(),
               cosets::Bool = false)
 
