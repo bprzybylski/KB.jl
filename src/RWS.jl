@@ -3,7 +3,7 @@
          rws::RewritingSystem = RewritingSystem(),
          check::Bool = true)
 
-Reads the RWS description from a file determined by the `filename` parameter. Returns a `RewritingSystem` structure that reflects the input file. If the `rws` parameter points to an existing structure, the file will be loaded into that structure. The `check` parameter determines whether words in equations should be additionally checked.
+Reads an RWS description from a file determined by the `filename` parameter. Returns a `RewritingSystem` structure that reflects the input file. If the `rws` parameter points to an existing structure, the file will be loaded into that structure. The `check` parameter determines whether words in equations should be additionally checked.
 """
 function load(filename::String,
               rws::RewritingSystem = RewritingSystem(),
@@ -82,7 +82,7 @@ eqns(rws::RewritingSystem) = [unsafe_load(rws.eqns, i) for i in 2:rws.num_eqns+1
     Init(rws::RewritingSystem = RewritingSystem(),
          cosets::Bool = false)
 
-Generates and returns a new `RewritingSystem` structure that has its fields set up. f the `rws` parameter points to an existing structure, the setup will be performed on this structure. The `cosets` parameter determines the initial value of the `cosets` field of the returned structure.
+Generates and returns a new `RewritingSystem` structure that has its fields set up. If the `rws` parameter points to an existing structure, the setup will be performed on this structure. The `cosets` parameter determines the initial value of the `cosets` field of the returned structure.
 """
 function Init(rws::RewritingSystem = RewritingSystem(),
               cosets::Bool = false)

@@ -1,5 +1,6 @@
 """
-    reduce!(w::Vector{Gen}, rws::RewritingSystem)
+    reduce!(w::Vector{Gen},
+            rws::RewritingSystem)
 
 Reduces `w` in-place based on `rws`. Here, `w` is a vector of indices that correspond to proper generators in `rws`.
 """
@@ -73,9 +74,10 @@ function break_into_letters(w::AbstractString)
 end
 
 """
-    reduce(w::String, rws::RewritingSystem)
+    reduce(w::String,
+           rws::RewritingSystem)
 
-Reduces `w` in-place based on `rws`. Here, `w` is a string in a form of a product of powers of generators. It returns a similar string that represents a reduced word.
+Reduces `w` based on `rws`. Here, `w` is a string in a form of a product of powers of generators. The function returns a string that represents a reduced word.
 """
 function reduce(w::String, rws::RewritingSystem)
     gensn = gen_names(rws)
