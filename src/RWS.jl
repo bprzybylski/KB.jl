@@ -139,7 +139,20 @@ This function is based on the ./deps/src/kbmag-1.5.8/standalone/lib/rwsio.c:224-
 """
 function BuildRWS(G::Groups.FPGroup;
                   isConfluent = false,
-                  tidyint = 0)
+                  tidyint = 0,
+                  maxeqns = 32767,
+                  maxstates = 0,
+                  confnum = 500,
+                  sorteqns = false,
+                  maxoplen = 0,
+                  maxlenleft = 0,
+                  maxlenright = 0,
+                  maxoverlaplen = 0,
+                  maxwdiffs = 512,
+                  maxreducelen = 32767,
+                  rkminlen = 0,
+                  rkmineqns = 0,
+                  ordering::KBMOrderings = SHORTLEX)
     #=
         mutable struct FPGroup <: AbstractFPGroup
             gens::Vector{FPSymbol}
@@ -147,6 +160,75 @@ function BuildRWS(G::Groups.FPGroup;
         end
     =#
     rws = Init()
+
+    # Do not set the name
+    rws.name = ntuple(_->Cchar(0), 256)
+
+    # Set basic parameters
+    if isConfluent && !rws.resume_with_orig
+        error("System is already confluent!")
+    end
+
+    if !rws.tidyintset && tidyint > 0
+        rws.tidyint = tidyint
+        rws.tidyintset = true # This was not in the original file
+    end
+
+    if rws.inv_of != C_NULL
+        error("Input error: 'maxeqns' field must precede 'inverses' field")
+    elseif !rws.maxeqnsset && !rws.resume_with_orig && maxeqns > 16
+        rws.maxeqns = maxeqns
+        rws.maxeqnsset = true # This was not in the original file
+    end
+
+    if rws.inv_of != C_NULL
+        error("Input error: 'maxstates' field must precede 'inverses' field")
+    elseif !rws.maxstatesset && maxstates > 128
+        rws.maxstates = maxstates
+        rws.maxstatesset = true # This was not in the original file
+    end
+
+    if !rws.confnumset && confnum > 0
+        rws.confnum = confnum
+        rws.confnumset = true # This was not in the original file
+    end
+
+    rws.sorteqns = sorteqns
+
+    if rws.maxoplen == 0 && maxoplen >= 0
+        rws.sorteqns = true
+        rws.maxoplen = maxoplen
+    end
+
+    if maxlenleft > 0 && maxlenright > 0 && rws.maxlenleft == 0 && rws.maxlenright == 0
+        rws.maxlenleft = maxlenleft
+        rws.maxlenright = maxlenright
+    end
+
+    if maxoverlaplen > 0
+        rws.maxoverlaplen = maxoverlaplen
+    end
+
+    if !rws.maxwdiffset && maxwdiffs > 16
+        rws.maxwdiffs = maxwdiffs
+        rws.maxwdiffset = true # This was not in the original file
+    end
+
+    if !rws.maxreducelenset && maxreducelen > 4096
+        rws.maxreducelen = maxreducelen
+        rws.maxreducelenset = true # This was not in the original file
+    end
+
+    if rkminlen > 0 && rkmineqns > 0 && rws.rkminlen == 0 && rws.rkmineqns == 0
+        rws.rkminlen = rkminlen
+        rws.rkmineqns = rkmineqns
+        rk_on = true # This was not in the original file
+    end
+
+    if !rws.orderingset
+        rws.ordering = ordering
+        rws.orderingset = true # This was not in the original file
+    end
 
     return rws
 end
