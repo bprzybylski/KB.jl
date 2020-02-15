@@ -153,12 +153,6 @@ function BuildRWS(G::Groups.FPGroup;
                   rkminlen = 0,
                   rkmineqns = 0,
                   ordering::KBMOrderings = SHORTLEX)
-    #=
-        mutable struct FPGroup <: AbstractFPGroup
-            gens::Vector{FPSymbol}
-            rels::Dict{FPGroupElem, FPGroupElem}
-        end
-    =#
     rws = Init()
 
     # Do not set the name
@@ -229,6 +223,22 @@ function BuildRWS(G::Groups.FPGroup;
         rws.ordering = ordering
         rws.orderingset = true # This was not in the original file
     end
+
+    #=
+        mutable struct FPGroup <: AbstractFPGroup
+            gens::Vector{FPSymbol}
+            rels::Dict{FPGroupElem, FPGroupElem}
+        end
+    =#
+
+    # Generators
+    C = [""]
+    append!(C, string.(G.gens))
+    GC.@preserve C true
+    # Get the number of generators
+    rws.num_gens = size(C)[1] - 1
+    # Move the generators to the RWS. Warning. These are not processed and are assumed to be correct.
+    rws.gen_name = Base.unsafe_convert(Ptr{Ptr{Int8}}, Base.cconvert(Ptr{Ptr{Int8}}, C))
 
     return rws
 end
