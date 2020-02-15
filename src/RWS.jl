@@ -1,3 +1,5 @@
+using Groups
+
 """
     load(filename::String,
          rws::RewritingSystem = RewritingSystem(),
@@ -125,6 +127,26 @@ function Init(rws::RewritingSystem = RewritingSystem(),
         #rws.wd_record = C_NULL
         #rws.wd_alphabet = C_NULL
         #rws.subwordsG = C_NULL
+
+    return rws
+end
+
+"""
+    BuildRWS(G::FPGroup)
+
+Builds a RewritingSystem based on a finitely-presented group.
+This function is based on the ./deps/src/kbmag-1.5.8/standalone/lib/rwsio.c:224-525 implementation.
+"""
+function BuildRWS(G::Groups.FPGroup;
+                  isConfluent = false,
+                  tidyint = 0)
+    #=
+        mutable struct FPGroup <: AbstractFPGroup
+            gens::Vector{FPSymbol}
+            rels::Dict{FPGroupElem, FPGroupElem}
+        end
+    =#
+    rws = Init()
 
     return rws
 end
