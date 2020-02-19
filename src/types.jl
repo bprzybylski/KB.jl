@@ -249,7 +249,7 @@ mutable struct ReductionStruct
     # Constructor
     function ReductionStruct(rws::RewritingSystem, maxreducelen = 32767)
         return new(
-            Ptr{RewritingSystem}(pointer_from_objref(rws)),
+            c_pointer(rws),
             rws.wd_fsa,
             0,
             C_NULL,
