@@ -40,12 +40,12 @@ julia> KBmag.replace_pows("xyz")
 ```
 """
 function replace_pows(s::AbstractString)
-    reg = r"(\w+)\^(\d+)"
+    reg = r"(?<word>\w+)\^(?<exponent>\d+)"
     m = match(reg, s)
     isnothing(m) && return [s]
 
-    letter = m.captures[1]
-    pow = parse(Int, m.captures[2])
+    letter = m.captures[:word]
+    pow = parse(Int, m.captures[:exponent])
 
     return [letter for _ in 1:pow]
 end
