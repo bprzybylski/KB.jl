@@ -31,21 +31,20 @@ julia> KBmag.replace_pows("xyz^3")
  "xyz"
  "xyz"
  "xyz"
-```
 
-```julia-repl
 julia> KBmag.replace_pows("xyz")
-1-element Array{String,1}:
+1-element Array{SubString{String},1}:
  "xyz"
+
 ```
 """
 function replace_pows(s::AbstractString)
     reg = r"(?<word>\w+)\^(?<exponent>\d+)"
     m = match(reg, s)
-    isnothing(m) && return [s]
+    isnothing(m) && return [SubString(s)]
 
-    letter = m.captures[:word]
-    pow = parse(Int, m.captures[:exponent])
+    letter = m[:word]
+    pow = parse(Int, m[:exponent])
 
     return [letter for _ in 1:pow]
 end
