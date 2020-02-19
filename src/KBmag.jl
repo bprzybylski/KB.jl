@@ -15,6 +15,18 @@ include("RWS.jl")           # loading/saving and preparing rewriting systems
 include("reduce.jl")        # word reduction
 include("BinWrapper.jl")    # a wrapper for standalone binary files from the kbmag library
 
-include("debug.jl")         # independent debug functions (ready to be removed at any moment)
+KBType = Union{
+    ReductionStruct,
+    RewritingSystem,
+    ReductionEquation,
+    WDR,
+    FSA,
+    TableStruc,
+    Srec
+}
+
+include("reductioneq.jl")
+
+include("show.jl")
 
 end # module
