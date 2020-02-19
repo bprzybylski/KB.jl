@@ -40,7 +40,7 @@ function save(filename::String,
         ccall((:print_kboutput, fsalib),
             Cvoid,
             (Ptr{Cvoid}, Ref{RewritingSystem}),
-            c_file_hdlr, Ref(rws))
+            c_file_hdlr, rws)
     end
 
     @info "Succesfully written file $filename"
@@ -71,7 +71,7 @@ function gen_names(rws::RewritingSystem)
     # In the following, we ommit the first element of rws.eqns as it is garbage
     # (kbmag does not use array elements indexed with zero)
     v = [unsafe_load(rws.gen_name, i) for i in 2:rws.num_gens+1]
-    return String.(reinterpret.(UInt8, unsafe_load.(v)))
+    return unsafe_string.(v)
 end
 
 # In the following, we ommit the first element of rws.eqns as it is garbage
