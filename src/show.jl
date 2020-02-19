@@ -11,7 +11,22 @@ function Base.show(io::IO, kbt::KBType)
     end
 end
 
-function Base.show(io::IO, re::ReductionEquation)
+function Base.show(io::IO, ::MIME"text/plain", re::ReductionEquation)
     println(io, "ReductionEquation (in rws generators):")
-    println(io, "\t$(lhs(re)) → $(rhs(re))")
+    print(io, "\t$(lhs(re)) → $(rhs(re))")
+end
+Base.show(io::IO, re::ReductionEquation) = print(io, "$(lhs(re)) → $(rhs(re))")
+
+function show_equations(rws::RewritingSystem)
+    names = gen_names(rws)
+    lhs_rhs = [
+        (join((names[l] for l in lhs(eq)), "*"),
+         join((names[r] for r in rhs(eq)), "*")) for eq in eqns(rws)]
+    k = maximum(x->length(first(x)), lhs_rhs)
+    for (l,r) in lhs_rhs
+        if isempty(r)
+            r = "(id)"
+        end
+        println(lpad(l, k+2), "\t→\t", r)
+    end
 end
