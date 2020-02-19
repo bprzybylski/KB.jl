@@ -131,7 +131,7 @@ end
 # Original struct name: rewriting_system
 # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rws.h:42-160
 mutable struct RewritingSystem
-    name::NTuple{256,Cchar} # Originally char name[256] (what to do about that?)
+    name::NTuple{256,Cchar} # Originally char name[256]
     ordering::KBMOrderings
     weight::Ptr{Int32}
     level::Ptr{Int32}
@@ -220,13 +220,17 @@ mutable struct RewritingSystem
     wd_alphabet::Ptr{Srec}
     subwordsG::Ptr{Ptr{Gen}}
     # Constructor
-    function RewritingSystem()
-        rws = new(ntuple(_->Cchar(0), 256))
-        rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
+    function RewritingSystem(name::AbstractString="")
+        name_cchar = zeros(Int8, 256)
+        @assert length(name) <= 256 "Names of rws of length <= 256 are supported"
+        for (i,l) in enumerate(name)
+            name_cchar[i] = Cchar(l)
+        end
+        rws = new(tuple(name_cchar...))
         ccall((:set_defaults, fsalib),
-            Cvoid,
-            (Ptr{RewritingSystem}, Bool),
-            Ref(rws), false)
+              Cvoid,
+              (Ref{RewritingSystem}, Bool),
+              rws, false)
         return rws
     end
 end

@@ -4,14 +4,14 @@
 
 Reduces `w` in-place based on `rws`. Here, `w` is a vector of indices that correspond to proper generators in `rws`.
 """
-function reduce!(w::Vector{Gen}, rws::RewritingSystem)
+function reduce!(w::AbstractVector{Gen}, rws::RewritingSystem)
     rs = ReductionStruct(rws)
 
     # Called function name: rws_reduce
     # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsreduce.c:27
     r = ccall((:rws_reduce, fsalib),
                  Cint,
-                 (Ptr{Gen}, Ref{ReductionStruct}),
+                 (Ref{Gen}, Ref{ReductionStruct}),
                  w, rs)
 
     iszero(r) || error(

@@ -17,7 +17,7 @@ function load(filename::String,
         ccall((:read_kbinput, fsalib),
             Cvoid,
             (Ptr{Cvoid}, Bool, Ref{RewritingSystem}),
-            c_file_hdlr, check, Ref(rws))
+            c_file_hdlr, check, rws)
     end
 
     return rws
@@ -60,7 +60,7 @@ function knuthbendix!(rws::RewritingSystem)
     r = return ccall((:kbprog, fsalib),
                  Cint,
                  (Ref{RewritingSystem},),
-                 Ref(rws))
+                 rws)
 
     iszero(r) || "Knuth-Bendix completion returned non-zero status: $r"
 
