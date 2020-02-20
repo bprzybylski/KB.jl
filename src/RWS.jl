@@ -231,7 +231,7 @@ function BuildRWS(G::Groups.FPGroup;
     # Generators
     C = Symbol[Symbol(""); getfield.(G.gens, :id)]
     # Get the number of generators
-    rws.num_gens = length(C)
+    rws.num_gens = length(C) - 1
     # Move the generators to the RWS. Warning. These are not processed and are assumed to be correct.
     ref_C = Base.cconvert(Ptr{Ptr{Int8}}, C)
     rws.gen_name = Base.unsafe_convert(Ptr{Ptr{Int8}}, ref_C)
