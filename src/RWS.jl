@@ -17,7 +17,8 @@ function load(filename::String,
         ccall((:read_kbinput, fsalib),
             Cvoid,
             (Ptr{Cvoid}, Bool, Ref{RewritingSystem}),
-            c_file_hdlr, check, Ref(rws))
+            c_file_hdlr, check, rws)
+        close(c_file_hdlr)
     end
 
     return rws
@@ -40,7 +41,8 @@ function save(filename::String,
         ccall((:print_kboutput, fsalib),
             Cvoid,
             (Ptr{Cvoid}, Ref{RewritingSystem}),
-            c_file_hdlr, Ref(rws))
+            c_file_hdlr, rws)
+        close(c_file_hdlr)
     end
 
     @info "Succesfully written file $filename"
@@ -60,7 +62,7 @@ function knuthbendix!(rws::RewritingSystem)
     r = return ccall((:kbprog, fsalib),
                  Cint,
                  (Ref{RewritingSystem},),
-                 Ref(rws))
+                 rws)
 
     iszero(r) || "Knuth-Bendix completion returned non-zero status: $r"
 
@@ -71,7 +73,7 @@ function gen_names(rws::RewritingSystem)
     # In the following, we ommit the first element of rws.eqns as it is garbage
     # (kbmag does not use array elements indexed with zero)
     v = [unsafe_load(rws.gen_name, i) for i in 2:rws.num_gens+1]
-    return String.(reinterpret.(UInt8, unsafe_load_ptrGen.(v)))
+    return unsafe_string.(v)
 end
 
 # In the following, we ommit the first element of rws.eqns as it is garbage
@@ -79,33 +81,29 @@ end
 eqns(rws::RewritingSystem) = [unsafe_load(rws.eqns, i) for i in 2:rws.num_eqns+1]
 
 """
-    Init(rws::RewritingSystem = RewritingSystem(),
-         cosets::Bool = false)
+    set_defaults!(rws::RewritingSystem, cosets::Bool=false)
 
-Generates and returns a new `RewritingSystem` structure that has its fields set up. If the `rws` parameter points to an existing structure, the setup will be performed on this structure. The `cosets` parameter determines the initial value of the `cosets` field of the returned structure.
+Sets the fields of a `RewritingSystem` structure to their respective defaults.
+The `cosets` parameter determines the initial value of the `cosets` field of the returned structure.
 """
-function Init(rws::RewritingSystem = RewritingSystem(),
-              cosets::Bool = false)
-
-    # Pointer to rws
-    rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
+function set_defaults!(rws::RewritingSystem, cosets::Bool=false)
 
     # Called function name: set_defaults
     # Source: ./deps/src/kbmag-1.5.8/standalone/lib/kbfns.c:59
     ccall((:set_defaults, fsalib),
           Cvoid,
           (Ptr{RewritingSystem}, Bool),
-          rws_ptr, cosets)
+          rws, cosets)
 
     # Set values
-    rws.num_gens = Int32(0)
-    rws.num_eqns = Int32(0)
-    rws.num_inveqns = Int32(0)
-    rws.current_maxstates = Int32(0)
+    rws.num_gens = 0
+    rws.num_eqns = 0
+    rws.num_inveqns = 0
+    rws.current_maxstates = 0
     rws.Gislevel = false
 
     # Set pointers
-    rws.name = ntuple(_->Cchar(0), 256)
+    # rws.name = ntuple(_->Cchar(0), 256)
         #rws.weight = C_NULL
         #rws.level = C_NULL
         #rws.inv_of = C_NULL

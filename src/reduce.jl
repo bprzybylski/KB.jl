@@ -4,14 +4,14 @@
 
 Reduces `w` in-place based on `rws`. Here, `w` is a vector of indices that correspond to proper generators in `rws`.
 """
-function reduce!(w::Vector{Gen}, rws::RewritingSystem)
+function reduce!(w::AbstractVector{Gen}, rws::RewritingSystem)
     rs = ReductionStruct(rws)
 
     # Called function name: rws_reduce
     # Source: ./deps/src/kbmag-1.5.6/standalone/lib/rwsreduce.c:27
     r = ccall((:rws_reduce, fsalib),
                  Cint,
-                 (Ptr{Gen}, Ref{ReductionStruct}),
+                 (Ref{Gen}, Ref{ReductionStruct}),
                  w, rs)
 
     iszero(r) || error(
@@ -31,21 +31,20 @@ julia> KBmag.replace_pows("xyz^3")
  "xyz"
  "xyz"
  "xyz"
-```
 
-```julia-repl
 julia> KBmag.replace_pows("xyz")
-1-element Array{String,1}:
+1-element Array{SubString{String},1}:
  "xyz"
+
 ```
 """
 function replace_pows(s::AbstractString)
-    reg = r"(\w+)\^(\d+)"
+    reg = r"(?<word>\w+)\^(?<exponent>\d+)"
     m = match(reg, s)
-    isnothing(m) && return [s]
+    isnothing(m) && return [SubString(s)]
 
-    letter = m.captures[1]
-    pow = parse(Int, m.captures[2])
+    letter = m[:word]
+    pow = parse(Int, m[:exponent])
 
     return [letter for _ in 1:pow]
 end

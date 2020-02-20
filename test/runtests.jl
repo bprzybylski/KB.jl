@@ -8,7 +8,7 @@ using KBmag
 
     @test KBmag.RewritingSystem() isa KBmag.RewritingSystem
 
-    kbmag_data_dir = joinpath("..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data")
+    kbmag_data_dir = joinpath(@__DIR__, "..", "deps", "src", "kbmag-1.5.8", "standalone", "kb_data")
 
     @testset "237" begin
         fname = joinpath(kbmag_data_dir, "237")
