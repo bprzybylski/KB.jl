@@ -18,6 +18,7 @@ function load(filename::String,
             Cvoid,
             (Ptr{Cvoid}, Bool, Ref{RewritingSystem}),
             c_file_hdlr, check, rws)
+        close(c_file_hdlr)
     end
 
     return rws
@@ -41,6 +42,7 @@ function save(filename::String,
             Cvoid,
             (Ptr{Cvoid}, Ref{RewritingSystem}),
             c_file_hdlr, rws)
+        close(c_file_hdlr)
     end
 
     @info "Succesfully written file $filename"
