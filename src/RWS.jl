@@ -155,9 +155,6 @@ function BuildRWS(G::Groups.FPGroup;
                   ordering::KBMOrderings = SHORTLEX)
     rws = Init()
 
-    # Do not set the name
-    rws.name = ntuple(_->Cchar(0), 256)
-
     # Set basic parameters
     if isConfluent && !rws.resume_with_orig
         error("System is already confluent!")
