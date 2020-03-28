@@ -264,6 +264,7 @@ function BuildRWS(G::Groups.FPGroup;
     t = tempname()
     open(t, "w") do file_hdlr
         write(file_hdlr, compatible_eqnstr(G))
+    end
 
     open(t, "r") do file_hdlr
         c_file_hdlr = Libc.FILE(file_hdlr)
