@@ -8,3 +8,6 @@ AbstractAlgebra = "c3fe647b-3220-5bb0-a1ea-a7954cac585d"
 Groups = "5d8bd718-bd84-11e8-3b40-ad14f4a32557"
 Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+Groups = "^0.4.0"
