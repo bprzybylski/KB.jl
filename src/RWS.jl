@@ -229,12 +229,74 @@ function BuildRWS(G::Groups.FPGroup;
     =#
 
     # Generators
-    C = Symbol[Symbol(""); getfield.(G.gens, :id)]
+    symmetric_gens = unique([G.gens; inv.(G.gens)])
+
+    C = Symbol[Symbol(""); unique_id.(symmetric_gens)]
     # Get the number of generators
     rws.num_gens = length(C) - 1
     # Move the generators to the RWS. Warning. These are not processed and are assumed to be correct.
     ref_C = Base.cconvert(Ptr{Ptr{Int8}}, C)
     rws.gen_name = Base.unsafe_convert(Ptr{Ptr{Int8}}, ref_C)
 
+    # Weights
+    # [Ignored]
+    rws.ordering == KBMOrderings.WTLEX && throw("Unimplemented")
+
+    # Level
+    # [Ignored]
+    rws.ordering == KBMOrderings.WREATHPROD && throw("Unimplemented")
+
+    # Inverses
+    # We assume that every generator has an inversion
+    rws.inv_of = [0; map(g->findindex(inv(g), symmetric_gens), symmetric_gens)]
+
+    # Initialize equations
+    ccall((:initialize_eqns, fsalib), Cvoid, (Ref{RewritingSystem},), rws)
+
+    S = "[" * join(kbmag_compatible_eqn(r...) for r in G.rels, ",") * "]"
+
+    open(tempname(), "w") do file_hdlr
+        write(file_hdlr, S)
+
+        c_file_hdlr = Libc.FILE(file_hdlr)
+        seek(c_file_hdlr, 0)
+
+        # Called function name: read_kbinput
+        # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rwsio.c:224
+        ccall((:read_eqns, fsalib),
+            Cvoid,
+            (Ptr{Cvoid}, Bool, Ref{RewritingSystem}),
+            c_file_hdlr, check, Ref(rws))
+    end
+
+    # Done
+    # [non-applicable]
+
+    # Free eqn_no allocated in initialize_eqns
+    Libc.free(rws.eqn_no)
+
     return rws, ref_C
+end
+
+#####
+# To be separated
+
+function kbmag_compatible_word(w::GWord, translate_names = uniqe_id)
+    isone(w) && return "IdWord"
+    return join((string(translate_names(s)) for s in w.symbols), "*")
+end
+
+function kbmag_compatible_eqn(lhs, rhs)
+    f = kbmag_compatible_word
+    return "[ $(f(lhs)), $(f(lhs)) ]"
+end
+
+function uniqe_id(s::Groups.GSymbol)
+    if s.pow > 0
+        return(Symbol(lowercase(string(s.id))))
+    elseif s.pow < 0
+        return(Symbol(uppercase(string(s.id))))
+    else # s.pow == 0
+        return Symbol("IdWord")
+    end
 end
