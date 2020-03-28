@@ -253,10 +253,8 @@ function BuildRWS(G::Groups.FPGroup;
     # Initialize equations
     ccall((:initialize_eqns, fsalib), Cvoid, (Ref{RewritingSystem},), rws)
 
-    S = "[" * join(kbmag_compatible_eqn(r...) for r in G.rels, ",") * "]"
-
     open(tempname(), "w") do file_hdlr
-        write(file_hdlr, S)
+        write(file_hdlr, compatible_eqnstr(G))
 
         c_file_hdlr = Libc.FILE(file_hdlr)
         seek(c_file_hdlr, 0)
@@ -278,17 +276,20 @@ function BuildRWS(G::Groups.FPGroup;
     return rws, ref_C
 end
 
-#####
+########
 # To be separated
 
-function kbmag_compatible_word(w::GWord, translate_names = uniqe_id)
+function compatible_wordstr(w::Groups.GWord, translate_names = uniqe_id)
     isone(w) && return "IdWord"
     return join((string(translate_names(s)) for s in w.symbols), "*")
 end
 
-function kbmag_compatible_eqn(lhs, rhs)
-    f = kbmag_compatible_word
-    return "[ $(f(lhs)), $(f(lhs)) ]"
+function compatible_eqnstr(lhs, rhs, f = compatible_wordstr)
+    return "[ $(f(lhs)), $(f(rhs)) ]"
+end
+
+function compatible_eqnstr(G::Groups.AbstractFPGroup)
+    return "[" * join((compatible_eqnstr(r...) for r in G.rels), ",") * "]"
 end
 
 function uniqe_id(s::Groups.GSymbol)
