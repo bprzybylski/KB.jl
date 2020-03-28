@@ -152,6 +152,7 @@ function BuildRWS(G::Groups.FPGroup;
                   maxreducelen = 32767,
                   rkminlen = 0,
                   rkmineqns = 0,
+                  check = true,
                   ordering::KBMOrderings = SHORTLEX)
     rws = Init()
 
@@ -240,15 +241,16 @@ function BuildRWS(G::Groups.FPGroup;
 
     # Weights
     # [Ignored]
-    rws.ordering == KBMOrderings.WTLEX && throw("Unimplemented")
+    rws.ordering == WTLEX && throw("Unimplemented")
 
     # Level
     # [Ignored]
-    rws.ordering == KBMOrderings.WREATHPROD && throw("Unimplemented")
+    rws.ordering == WREATHPROD && throw("Unimplemented")
 
     # Inverses
     # We assume that every generator has an inversion
-    rws.inv_of = [0; map(g->findindex(inv(g), symmetric_gens), symmetric_gens)]
+    inv_of = Int32[0; map(g->findfirst(==(inv(g)), symmetric_gens), symmetric_gens)]
+    rws.inv_of = pointer(inv_of)
 
     # Initialize equations
     ccall((:initialize_eqns, fsalib), Cvoid, (Ref{RewritingSystem},), rws)
@@ -273,13 +275,13 @@ function BuildRWS(G::Groups.FPGroup;
     # Free eqn_no allocated in initialize_eqns
     Libc.free(rws.eqn_no)
 
-    return rws, ref_C
+    return rws, (ref_C, inv_of)
 end
 
 ########
 # To be separated
 
-function compatible_wordstr(w::Groups.GWord, translate_names = uniqe_id)
+function compatible_wordstr(w::Groups.GWord, translate_names = unique_id)
     isone(w) && return "IdWord"
     return join((string(translate_names(s)) for s in w.symbols), "*")
 end
@@ -292,7 +294,7 @@ function compatible_eqnstr(G::Groups.AbstractFPGroup)
     return "[" * join((compatible_eqnstr(r...) for r in G.rels), ",") * "]"
 end
 
-function uniqe_id(s::Groups.GSymbol)
+function unique_id(s::Groups.GSymbol)
     if s.pow > 0
         return(Symbol(lowercase(string(s.id))))
     elseif s.pow < 0
