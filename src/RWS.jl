@@ -281,9 +281,18 @@ end
 ########
 # To be separated
 
+function compatible_wordstr(s::Groups.GSymbol, translate_names = unique_id)
+    isone(s) && return ""
+    return join(
+        (translate_names(s) for _ in 1:abs(s.pow)),
+        "*")
+end
+
 function compatible_wordstr(w::Groups.GWord, translate_names = unique_id)
     isone(w) && return "IdWord"
-    return join((string(translate_names(s)) for s in w.symbols), "*")
+    return join(
+        (compatible_wordstr(s, translate_names) for s in w.symbols),
+        "*")
 end
 
 function compatible_eqnstr(lhs, rhs, f = compatible_wordstr)
