@@ -73,7 +73,7 @@ function gen_names(rws::RewritingSystem)
     # In the following, we ommit the first element of rws.eqns as it is garbage
     # (kbmag does not use array elements indexed with zero)
     v = [unsafe_load(rws.gen_name, i) for i in 2:rws.num_gens+1]
-    return String.(reinterpret.(UInt8, unsafe_load_ptrGen.(v)))
+    return String.(reinterpret.(UInt8, unsafe_load.(v)))
 end
 
 # In the following, we ommit the first element of rws.eqns as it is garbage
@@ -239,6 +239,10 @@ function BuildRWS(G::Groups.FPGroup;
     ref_C = Base.cconvert(Ptr{Ptr{Int8}}, C)
     rws.gen_name = Base.unsafe_convert(Ptr{Ptr{Int8}}, ref_C)
 
+    # Called function name: process_names
+    # Source: ./deps/src/kbmag-1.5.8/standalone/lib/miscio.c:362
+    ccall((:process_names, fsalib), Cvoid, (Ptr{Ptr{Int8}}, Cint), ref_C, rws.num_gens)
+
     # Weights
     # [Ignored]
     rws.ordering == WTLEX && throw("Unimplemented")
@@ -253,16 +257,19 @@ function BuildRWS(G::Groups.FPGroup;
     rws.inv_of = pointer(inv_of)
 
     # Initialize equations
-    ccall((:initialize_eqns, fsalib), Cvoid, (Ref{RewritingSystem},), rws)
+    # Called function name: initialise_eqns
+    # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rwsio.c:89
+    ccall((:initialise_eqns, fsalib), Cvoid, (Ref{RewritingSystem},), rws)
 
-    open(tempname(), "w") do file_hdlr
+    t = tempname()
+    open(t, "w") do file_hdlr
         write(file_hdlr, compatible_eqnstr(G))
 
+    open(t, "r") do file_hdlr
         c_file_hdlr = Libc.FILE(file_hdlr)
-        seek(c_file_hdlr, 0)
 
-        # Called function name: read_kbinput
-        # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rwsio.c:224
+        # Called function name: read_eqns
+        # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rwsio.c:115
         ccall((:read_eqns, fsalib),
             Cvoid,
             (Ptr{Cvoid}, Bool, Ref{RewritingSystem}),
@@ -296,7 +303,7 @@ function compatible_wordstr(w::Groups.GWord, translate_names = unique_id)
 end
 
 function compatible_eqnstr(lhs, rhs, f = compatible_wordstr)
-    return "[ $(f(lhs)), $(f(rhs)) ]"
+    return "[$(f(lhs)),$(f(rhs))]"
 end
 
 function compatible_eqnstr(G::Groups.AbstractFPGroup)
