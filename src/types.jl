@@ -222,6 +222,8 @@ mutable struct RewritingSystem
     # Constructor
     function RewritingSystem()
         rws = new(ntuple(_->Cchar(0), 256))
+        finalizer(rws, finalize)
+        
         rws_ptr = Base.unsafe_convert(Ptr{RewritingSystem}, Ref(rws))
         ccall((:set_defaults, fsalib),
             Cvoid,

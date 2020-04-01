@@ -50,6 +50,30 @@ function save(filename::String,
 end
 
 """
+    finalize(rws::RewritingSystem)
+
+Prepares `rws` to be removed from memory. It frees the memory allocated by Julia and calls an internal `kbmag` function to free the memory allocated by C.
+"""
+function finalize(rws::RewritingSystem)
+    rws.gen_name = C_NULL
+    rws.inv_of = C_NULL
+
+    #= In `rwsiob.c:421` we have the loop:
+     =     for (i = 1; i <= rwsptr->num_gens + 1; i++)
+     = so we set rws.num_gens to -1 in order to avoid
+     = executing this loop
+     =#
+    rws.num_gens = -1
+
+    # Called function name: rws_clear
+    # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rwsiob.c:413
+    ccall((:rws_clear, fsalib),
+                 Cvoid,
+                 (Ref{RewritingSystem},),
+                 Ref(rws))
+end
+
+"""
     knuthbendix!(rws::RewritingSystem)
 
 Runs a Knuth-Bendix completion on a given `RewritingSystem` structure determined by the `rws` parameter.
