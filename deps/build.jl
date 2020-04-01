@@ -1,4 +1,5 @@
 using Libdl
+using SHA
 
 # constant directories
 const download_dir = joinpath(@__DIR__, "downloads");       mkpath(download_dir)
@@ -7,11 +8,19 @@ const patches_dir = joinpath(@__DIR__, "patches");          mkpath(patches_dir)
 const target_lib_dir = joinpath(@__DIR__, "usr", "lib");    mkpath(target_lib_dir)
 const target_bin_dir = joinpath(@__DIR__, "usr", "bin");    mkpath(target_bin_dir)
 
+function check_sha512(fname, hash_value::String)
+    h = open(fname) do f
+        SHA.sha512(f)
+    end
+    return bytes2hex(h) == hash_value
+end
+
 # common functions
 function getsources(src_uri, destination, force=false)
-    if force || !isfile(destination)
+    if force || !isfile(destination) || !check_sha512(destination, sources_sha512[basename(destination)])
         download(src_uri, destination)
     end
+    @assert check_sha512(destination, sources_sha512[basename(destination)])
 end
 
 function unpack(source_tarball, destination_dir, force=false)
@@ -70,6 +79,10 @@ function installkbmag(version::VersionNumber, force=false)
         mv(joinpath(standalone_lib_dir, "fsalib.$(Libdl.dlext)"), target_lib, force=true)
     end
 end
+
+sources_sha512 = Dict(
+"kbmag-1.5.8.tar.gz" => "d424b10599251b890f724dc4b5eb05bd7ee227c1d03be06a34e8330abf8fdce5e864cac287ab684c3716e34e4d412c53a722ce788d0ff96366728c6d785f2c8c",
+)
 
 # download and build dependencies
 installkbmag(v"1.5.8", true)
