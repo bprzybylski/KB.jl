@@ -50,11 +50,11 @@ function save(filename::String,
 end
 
 """
-    finalize(rws::RewritingSystem)
+    clean(rws::RewritingSystem)
 
 Prepares `rws` to be removed from memory. It frees the memory allocated by Julia and calls an internal `kbmag` function to free the memory allocated by C.
 """
-function finalize(rws::RewritingSystem)
+function clean(rws::RewritingSystem)
     rws.gen_name = C_NULL
     rws.inv_of = C_NULL
 
