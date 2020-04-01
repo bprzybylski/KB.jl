@@ -55,15 +55,29 @@ end
 Prepares `rws` to be removed from memory. It frees the memory allocated by Julia and calls an internal `kbmag` function to free the memory allocated by C.
 """
 function clean(rws::RewritingSystem)
-    rws.gen_name = C_NULL
-    rws.inv_of = C_NULL
+    # Julia-based structures
+    rws.eqns = C_NULL
+    rws.num_eqns = Int32(0)
 
+    rws.gen_name = C_NULL
     #= In `rwsiob.c:421` we have the loop:
      =     for (i = 1; i <= rwsptr->num_gens + 1; i++)
      = so we set rws.num_gens to -1 in order to avoid
      = executing this loop
      =#
     rws.num_gens = -1
+
+    # C-based structures
+    rws.weight = C_NULL
+    rws.level = C_NULL
+    rws.inv_of = C_NULL
+    rws.history = C_NULL
+    rws.slowhistory = C_NULL
+    rws.slowhistorysp = C_NULL
+    rws.preflen = C_NULL
+    rws.prefno = C_NULL
+    rws.testword1 = C_NULL
+    rws.testword2 = C_NULL
 
     # Called function name: rws_clear
     # Source: ./deps/src/kbmag-1.5.8/standalone/lib/rwsiob.c:413
@@ -132,14 +146,14 @@ function Init(rws::RewritingSystem = RewritingSystem(),
 
     # Set pointers
     rws.name = ntuple(_->Cchar(0), 256)
-        #rws.weight = C_NULL
-        #rws.level = C_NULL
-        #rws.inv_of = C_NULL
+    rws.weight = C_NULL
+    rws.level = C_NULL
+    rws.inv_of = C_NULL
     rws.gen_name = C_NULL
     rws.eqns = C_NULL
     rws.reduction_fsa = C_NULL
     rws.wd_fsa = C_NULL
-        #rws.new_wd = C_NULL
+    rws.new_wd = C_NULL
     rws.history = C_NULL
     rws.slowhistory = C_NULL
     rws.slowhistorysp = C_NULL
@@ -148,9 +162,9 @@ function Init(rws::RewritingSystem = RewritingSystem(),
     rws.testword1 = C_NULL
     rws.testword2 = C_NULL
     rws.eqn_no = C_NULL
-        #rws.wd_record = C_NULL
-        #rws.wd_alphabet = C_NULL
-        #rws.subwordsG = C_NULL
+    rws.wd_record = C_NULL
+    rws.wd_alphabet = C_NULL
+    rws.subwordsG = C_NULL
 
     return rws
 end
