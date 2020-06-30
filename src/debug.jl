@@ -21,8 +21,8 @@ function Base.show(io::IO, kbt::KBType)
     end
 end
 
-# kbmag stores gen* NULL terminated (like strings)
-function unsafe_load_ptrGen(v::Ptr{Gen})
+# kbmag stores gen* NUL terminated (like strings)
+function Base.unsafe_load(v::Ptr{Gen})
     result = Vector{Gen}()
     idx = 1
     while true
@@ -34,8 +34,11 @@ function unsafe_load_ptrGen(v::Ptr{Gen})
     return result
 end
 
+lhs(eq::ReductionEquation) = unsafe_load(eq.lhs)
+rhs(eq::ReductionEquation) = unsafe_load(eq.rhs)
+
 function Base.show(io::IO, re::ReductionEquation)
-    lhs, rhs = unsafe_load_ptrGen(re.lhs), unsafe_load_ptrGen(re.rhs)
+    lhs, rhs = unsafe_load(re.lhs), unsafe_load(re.rhs)
     println(io, "ReductionEquation (in rws generators):")
     println(io, "\t$lhs  → $rhs")
 end
